@@ -1,0 +1,19 @@
+{
+  "liveNaverApiEnabled": false,
+  "freeOnly": true,
+  "monthlyCombinedLimit": 20000,
+  "blog": {
+    "monthlyLimit": 10000,
+    "dailyLimit": 1000
+  },
+  "trend": {
+    "monthlyLimit": 10000
+  },
+  "activationRequirements": [
+    "Server-side credentials only",
+    "Atomic shared quota reservation before every provider request",
+    "Stop on quota state failure; no automatic retry or paid fallback",
+    "Recheck provider free tier before enabling"
+  ],
+  "status": "External API calls blocked; server integration not yet enabled"
+}
