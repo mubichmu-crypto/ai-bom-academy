@@ -5,4 +5,13 @@
 /* Calm homepage sentence scale */
 .home-questions .sentence-group>a{font-size:15px;font-weight:400;letter-spacing:-.02em;color:#60745f}.home-questions .rail-track{height:43px}@media(max-width:700px){.home-questions .sentence-group>a{font-size:14px}.home-questions .rail-track{height:41px}}
 
-@keyframes sentence-melody{0%,100%{transform:translateY(2px)}50%{transform:translateY(-2px)}}.home-questions .sentence-group>a{animation:sentence-melody 5.6s ease-in-out infinite}.home-questions .sentence-group>a:nth-child(2){animation-delay:-.8s}.home-questions .sentence-group>a:nth-child(3){animation-delay:-1.6s}.home-questions .sentence-group>a:nth-child(4){animation-delay:-2.4s}.home-questions .sentence-group>a:nth-child(5){animation-delay:-3.2s}.home-questions .sentence-group>a:nth-child(6){animation-delay:-4s}.home-questions:is(:hover,:focus-within) .sentence-group>a,.home-questions:has([data-rail-toggle][aria-pressed=true]) .sentence-group>a{animation-play-state:paused}@media(prefers-reduced-motion:reduce){.home-questions .sentence-group>a{animation:none}}
+/* A quiet musical rise and fall: 6px of movement around staggered notes. */
+@keyframes sentence-melody{0%,100%{transform:translateY(calc(var(--note-y,0px) + 3px))}50%{transform:translateY(calc(var(--note-y,0px) - 3px))}}
+.home-questions .sentence-group>a{animation:sentence-melody 7.8s ease-in-out infinite;--note-y:4px}
+.home-questions .sentence-group>a:nth-child(2){--note-y:1px;animation-delay:-1.3s}
+.home-questions .sentence-group>a:nth-child(3){--note-y:-2px;animation-delay:-2.6s}
+.home-questions .sentence-group>a:nth-child(4){--note-y:-4px;animation-delay:-3.9s}
+.home-questions .sentence-group>a:nth-child(5){--note-y:-1px;animation-delay:-5.2s}
+.home-questions .sentence-group>a:nth-child(6){--note-y:2px;animation-delay:-6.5s}
+.home-questions:is(:hover,:focus-within) .sentence-group>a,.home-questions:has([data-rail-toggle][aria-pressed=true]) .sentence-group>a{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.home-questions .sentence-group>a{animation:none;transform:none}}
