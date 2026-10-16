@@ -1,1 +1,1 @@
-window.AI_BOM_VISITOR_CONFIG={measurementId:'',analyticsUrl:'https://analytics.google.com/',guestbookUrl:'https://form.naver.com/response/B3aalhLRVzX',guestbookResultsUrl:'https://form.naver.com/result/B3aalhLRVzX'};
+window.AI_BOM_VISITOR_CONFIG={measurementId:'G-4H80DW7DBY',analyticsUrl:'https://analytics.google.com/analytics/web/#/a412240560p559253072/reports/intelligenthome',guestbookUrl:'https://form.naver.com/response/B3aalhLRVzX',guestbookResultsUrl:'https://form.naver.com/result/B3aalhLRVzX'};
