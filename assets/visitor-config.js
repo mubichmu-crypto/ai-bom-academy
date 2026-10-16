@@ -1,0 +1,1 @@
+window.AI_BOM_VISITOR_CONFIG={measurementId:'',analyticsUrl:'https://analytics.google.com/',guestbookUrl:'https://form.naver.com/response/B3aalhLRVzX',guestbookResultsUrl:'https://form.naver.com/result/B3aalhLRVzX'};
