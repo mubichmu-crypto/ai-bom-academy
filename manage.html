@@ -17,7 +17,7 @@
 <form id="itemForm"><input id="itemId" type="hidden"><label>종류<select id="type"><option value="course">강의</option><option value="tool">AI 도구</option><option value="notice">공지</option><option value="work">작품</option><option value="link">링크</option></select></label>
 <label>제목<input id="itemTitle" maxlength="120" required></label><label>설명<textarea id="itemSummary" maxlength="600" rows="3"></textarea></label>
 <label>연결 주소<input id="itemHref" maxlength="600" placeholder="https:// 또는 상세.html"></label>
-<label>이미지 주소<input id="itemImage" maxlength="1000" placeholder="https://…"></label><label>또는 이미지 업로드<input id="uploadImage" type="file" accept="image/png,image/jpeg,image/webp"></label>
+<label>이미지 주소<input id="itemImage" maxlength="1000" placeholder="https://…"></label><label>컴퓨터에서 이미지 선택<input id="uploadImage" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="imageHelp"></label><p id="imageHelp" class="hint">JPG·PNG·WebP, 5MB 이하. 홈페이지 표시용으로 자동 최적화해 등록합니다. 원본 파일은 컴퓨터에 보관해 주세요.</p><img id="imagePreview" alt="등록할 이미지 미리보기" hidden style="max-width:100%;width:220px;max-height:180px;object-fit:contain"><button id="clearImage" type="button" class="secondary">이미지 지우기</button>
 <label>정렬 순서<input id="itemOrder" type="number" min="0" max="9999" value="100"></label>
 <label class="inline"><input id="itemPublished" type="checkbox" checked>방문자에게 공개</label>
 <div class="button-row"><button type="submit">콘텐츠 저장</button><button type="button" id="resetItem" class="secondary">새 항목 작성</button></div></form></section></div>
