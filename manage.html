@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>AI봄 관리자페이지</title>
+<link rel="stylesheet" href="assets/manager.css"><script type="module" src="assets/manager.js"></script></head>
+<body style="--main:#243B53;--accent:#5CCB8A">
+<header><a href="https://mubichmu-crypto.github.io/ai-bom-academy/" target="_blank" rel="noopener">AI봄 홈페이지 ↗</a><strong>AI봄 관리실</strong><button id="logout" hidden>로그아웃</button></header>
+<main><div id="status" role="status" aria-live="polite">연결 준비 중: Firebase 설정을 완료해야 로그인 및 저장 기능을 사용할 수 있습니다.</div>
+<section id="loginPanel" class="panel"><h1>관리자 로그인</h1><p>허가된 관리 계정으로만 콘텐츠를 수정할 수 있습니다.</p><form id="loginForm"><p>등록된 관리자 구글 계정으로 로그인하세요. 구글에 로그인하는 것만으로 편집 권한이 부여되지는 않습니다.</p><button type="submit" id="loginSubmit" disabled>구글 계정으로 로그인</button></form></section>
+<section id="appPanel" hidden><h1>콘텐츠 관리</h1><p class="hint">저장하면 Firebase 데이터가 바뀝니다. 공개 사이트와 연동한 후 방문자 화면에 표시됩니다.</p>
+<div class="columns"><section class="panel"><h2>홈페이지 기본 정보</h2><form id="settingsForm">
+<label>대표 문구<input id="title" maxlength="100" required></label><label>소개 한 줄<textarea id="subtitle" maxlength="250" rows="3"></textarea></label>
+<label>주요 버튼 글자<input id="ctaLabel" maxlength="60"></label><label>버튼 연결주소<input id="ctaHref" maxlength="600" placeholder="https:// 또는 페이지.html"></label>
+<label>전화번호<input id="contactPhone" maxlength="40"></label><label>이메일<input id="contactEmail" type="email" maxlength="120"></label>
+<input id="hours" type="hidden">
+<button type="submit">기본 정보 저장</button></form></section>
+<section class="panel"><h2>콘텐츠 등록·수정</h2><p class="hint">강의·메뉴·공지 등 방문자에게 보여줄 카드 정보를 관리합니다.</p>
+<form id="itemForm"><input id="itemId" type="hidden"><label>종류<select id="type"><option value="course">강의</option><option value="tool">AI 도구</option><option value="notice">공지</option><option value="work">작품</option><option value="link">링크</option></select></label>
+<label>제목<input id="itemTitle" maxlength="120" required></label><label>설명<textarea id="itemSummary" maxlength="600" rows="3"></textarea></label>
+<label>연결 주소<input id="itemHref" maxlength="600" placeholder="https:// 또는 상세.html"></label>
+<label>이미지 주소<input id="itemImage" maxlength="1000" placeholder="https://…"></label><label>또는 이미지 업로드<input id="uploadImage" type="file" accept="image/png,image/jpeg,image/webp"></label>
+<label>정렬 순서<input id="itemOrder" type="number" min="0" max="9999" value="100"></label>
+<label class="inline"><input id="itemPublished" type="checkbox" checked>방문자에게 공개</label>
+<div class="button-row"><button type="submit">콘텐츠 저장</button><button type="button" id="resetItem" class="secondary">새 항목 작성</button></div></form></section></div>
+<section class="panel"><h2>등록한 콘텐츠</h2><div id="itemsList" class="items"></div></section>
+
+</section></main><footer>콘텐츠 관리실 · 저장 연결 확인 후 이용하세요. 기존 예약·통계 관리는 별도로 유지됩니다.</footer>
+</body></html>
