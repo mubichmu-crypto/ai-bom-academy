@@ -12,3 +12,10 @@ main{max-width:1190px;padding:20px 22px 70px;margin:auto}.eyebrow{display:inline
 /* Drag handles preserve the click alternative on touch screens. */
 #palette button,.assembled{touch-action:none}
 .block-drag-ghost{position:fixed;z-index:9999;pointer-events:none;padding:12px 18px;border-radius:12px;background:#28573d;color:#fff;box-shadow:0 8px 28px #0003;font:700 16px system-ui;max-width:240px}
+
+/* Easy Korean workflow: choose, assemble, then run. */
+.hero{min-height:170px;padding:24px 32px;margin-bottom:18px;grid-template-columns:1fr 180px}.hero h1{font-size:clamp(29px,4vw,42px);margin:10px 0}.hero-art img{height:175px}.hero-bubble,.flower{display:none}.hero-chips{margin-top:10px}
+.easy-steps{display:flex;gap:10px;margin:0 0 24px}.easy-steps a{flex:1;display:flex;align-items:center;gap:9px;padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:#fff;text-decoration:none;font-weight:800}.easy-steps b{display:grid;place-items:center;width:28px;height:28px;flex-shrink:0;background:var(--leaf);border-radius:50%}
+.work{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.work-right{grid-column:1;grid-row:1}.work-left{grid-column:2;grid-row:1}.panel{scroll-margin-top:20px}.next-step{display:block;text-align:center;text-decoration:none;background:#327950;color:#fff;margin-top:12px}.block{min-height:52px}.input-hint{color:#536b58}.panel-kicker{color:#587264}.note{color:#5e725f}.stage-shell{min-height:300px}#stage{max-height:420px}
+@media(max-width:900px){.work{grid-template-columns:1fr}.work-right,.work-left{grid-column:auto;grid-row:auto}.work-right{order:0}.work-left{order:1}.easy-steps a{padding:10px;font-size:14px}}
+@media(max-width:620px){.hero{grid-template-columns:1fr;padding:20px}.hero-art{display:none}.hero h1{font-size:30px}.hero .lead{font-size:15px}.hero-chips{gap:5px}.easy-steps{gap:5px}.easy-steps a{flex-direction:column;text-align:center;gap:5px;font-size:12px;padding:9px 4px}.theme-grid{margin-bottom:18px}.tip-card{display:none}.panel-heading{align-items:center}.block{padding:12px 10px}.stage-shell{min-height:280px}#stage{max-height:360px}}
