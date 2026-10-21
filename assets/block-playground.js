@@ -83,11 +83,28 @@
     if (!audioEnabled || !synth || !window.SpeechSynthesisUtterance) return;
     synth.cancel();
     const utterance = new window.SpeechSynthesisUtterance(words);
-    utterance.lang = 'ko-KR'; utterance.rate = 1; utterance.pitch = 1.15;
-    const voice = synth.getVoices().find(v => v.lang.startsWith('ko'));
+    utterance.lang = 'ko-KR';
+    const warm=$('#voice-tone')?.value!=='clear';
+    utterance.rate = warm ? .9 : 1; utterance.pitch = 1;
+    const korean=synth.getVoices().filter(v=>/^ko(?:-|_)/i.test(v.lang));
+    const voice = korean.find(v=>v.voiceURI===$('#voice-choice')?.value) || korean[0];
     if (voice) utterance.voice = voice;
     synth.speak(utterance);
   }
+  function populateVoices(){
+    if(!synth)return;
+    const select=$('#voice-choice');if(!select)return;
+    const previous=select.value;
+    const voices=synth.getVoices().filter(v=>/^ko(?:-|_)/i.test(v.lang));
+    select.replaceChildren();
+    const base=document.createElement('option');base.value='';base.textContent='기본 한국어 목소리';select.append(base);
+    voices.forEach(voice=>{const option=document.createElement('option');option.value=voice.voiceURI;option.textContent=voice.name;select.append(option);});
+    select.value=voices.some(v=>v.voiceURI===previous)?previous:'';
+    $('#voice-choice-hint').textContent=voices.length ? '목소리를 골라 들어보세요. 높은 음정 변형 없이 조금 천천히 읽어요. 저장 영상은 무음입니다.' : '한국어 목소리 목록이 없으면 기기 기본 음성으로 읽습니다. Windows 음성 설정에 한국어 음성이 필요할 수 있어요.';
+  }
+  populateVoices();
+  synth?.addEventListener?.('voiceschanged',populateVoices);
+  $('#voice-preview')?.addEventListener('click',()=>{if(!synth||playing)return;audioEnabled=true;if(voiceToggle)voiceToggle.checked=true;speak('반가워요. 오늘도 당신을 응원할게요.');message('선택한 목소리로 짧은 인사를 읽어요.');});
   function react(kind = 'hello') {
     if (playing) return;
     clearTimeout(reactionTimer);
@@ -98,7 +115,7 @@
     reactionTimer = setTimeout(()=>{if(!playing){currentAction=null;reactionWords='';}},2400);
   }
   voiceToggle?.addEventListener('change',()=>{audioEnabled=voiceToggle.checked;if(!audioEnabled)synth?.cancel();});
-  if (!synth) { if(voiceToggle){voiceToggle.checked=false;voiceToggle.disabled=true;} audioEnabled=false; $('#voice-hint').textContent='이 브라우저는 목소리를 지원하지 않아 말풍선으로 대화해요.'; }
+  if (!synth) { if(voiceToggle){voiceToggle.checked=false;voiceToggle.disabled=true;} audioEnabled=false;$$('#voice-choice,#voice-tone,#voice-preview').forEach(el=>el.disabled=true); $('#voice-hint').textContent='이 브라우저는 목소리를 지원하지 않아 말풍선으로 대화해요.'; }
   $$('[data-react]').forEach(button=>button.addEventListener('click',()=>react(button.dataset.react)));
   canvas.addEventListener('click',()=>react('hello'));
   canvas.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();react('hello');}});
@@ -119,7 +136,7 @@
     $$('input[name=ratio]').forEach(el => el.disabled = active);
     $$('#palette button').forEach(el => el.disabled = active);
     input.disabled = active;
-    $$('#motion-speed,#dance-demo,#card-look,#repeat-count,#letter-example,[data-course]').forEach(el=>el.disabled=active);
+    $$('#motion-speed,#dance-demo,#card-look,#repeat-count,#letter-example,[data-course],#voice-choice,#voice-tone,#voice-preview').forEach(el=>el.disabled=active);
     [recipient,sender,$('#share-card')].forEach(el=>{if(el)el.disabled=active;});
     $$('[data-react],#mission-load').forEach(el=>el.disabled=active);
   }
@@ -494,7 +511,7 @@
       const def=blockDefinitions[kind];
       const words=cardWords();
       const speed=Number($('#motion-speed')?.value)||1;
-      const duration=kind==='say'?Math.max(def.duration,Math.min(16000,words.length*230+500)):def.duration/speed;
+      const duration=kind==='say'?Math.max(def.duration,Math.min(20000,words.length*270+700)):def.duration/speed;
       const toX=Math.max(-.14,Math.min(.14,motionX+(kind==='left'?-.14:kind==='right'?.14:0)));
       currentAction={kind,start:performance.now(),duration,fromX:motionX,toX};
       $$('#stack .assembled').forEach((row,i)=>row.classList.toggle('is-running',i===index));
