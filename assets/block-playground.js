@@ -51,7 +51,41 @@
   let recordingStream = null;
   let chunks = [];
   let cancelRecord = false;
-  let audioEnabled = false;
+  let audioEnabled = true;
+  let reactionWords = '';
+  let gaze = 0;
+  let reactionTimer = null;
+  let reactionCount = 0;
+  const synth = window.speechSynthesis;
+  const voiceToggle = $('#voice-enabled');
+  const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  function speak(words) {
+    if (!audioEnabled || !synth || !window.SpeechSynthesisUtterance) return;
+    synth.cancel();
+    const utterance = new window.SpeechSynthesisUtterance(words);
+    utterance.lang = 'ko-KR'; utterance.rate = 1; utterance.pitch = 1.15;
+    const voice = synth.getVoices().find(v => v.lang.startsWith('ko'));
+    if (voice) utterance.voice = voice;
+    synth.speak(utterance);
+  }
+  function react(kind = 'hello') {
+    if (playing) return;
+    clearTimeout(reactionTimer);
+    const replies = {hello:['안녕! 같이 놀자!', '또 만나서 반가워!'], praise:['칭찬해 줘서 고마워!', '네가 있어 기뻐!'], tickle:['아하하! 간지러워!', '히히! 한 번 더?']};
+    reactionWords = replies[kind][reactionCount++ % 2];
+    currentAction = {kind:kind === 'tickle' ? 'jump' : kind === 'praise' ? 'hearts' : 'wave',start:performance.now(),duration:2400};
+    speak(reactionWords); message(reactionWords);
+    reactionTimer = setTimeout(()=>{if(!playing){currentAction=null;reactionWords='';}},2400);
+  }
+  voiceToggle?.addEventListener('change',()=>{audioEnabled=voiceToggle.checked;if(!audioEnabled)synth?.cancel();});
+  if (!synth) { if(voiceToggle){voiceToggle.checked=false;voiceToggle.disabled=true;} audioEnabled=false; $('#voice-hint').textContent='이 브라우저는 목소리를 지원하지 않아 말풍선으로 대화해요.'; }
+  $$('[data-react]').forEach(button=>button.addEventListener('click',()=>react(button.dataset.react)));
+  canvas.addEventListener('click',()=>react('hello'));
+  canvas.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();react('hello');}});
+  canvas.addEventListener('pointermove',event=>{const rect=canvas.getBoundingClientRect();gaze=Math.max(-1,Math.min(1,((event.clientX-rect.left)/rect.width-.5)*2));});
+  canvas.addEventListener('pointerleave',()=>{gaze=0;});
+  $('#mission-load')?.addEventListener('click',()=>{if(playing)return;blocks=['wave','say','hearts'];updateStack();$('#mission-status').textContent='준비됐어요! 내 문구를 적고 실행해 보세요.';message('인사 놀이 블록을 연결했어요.');});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)synth?.cancel();});
   let lastAnimationTime = 0;
 
   function message(value) { $('#status').textContent = value; }
@@ -65,6 +99,7 @@
     $$('input[name=ratio]').forEach(el => el.disabled = active);
     $$('#palette button').forEach(el => el.disabled = active);
     input.disabled = active;
+    $$('[data-react],#mission-load').forEach(el=>el.disabled=active);
   }
   function $$(selector) { return document.querySelectorAll(selector); }
 
@@ -273,11 +308,13 @@
     if(playingAction==='hearts')form='heart';
     if(playingAction==='bow')form='thanks';
     const img=images[form];
-    let yOffset=0,rotation=0,scale=1;
+    let yOffset=reducedMotion?0:Math.sin(now/800)*h*.003,rotation=0,scale=1;
+    if(!currentAction && !reducedMotion)rotation=gaze*.025;
     if(playingAction==='jump'){yOffset=-Math.sin(progress*Math.PI)*h*.115;rotation=.055*Math.sin(progress*Math.PI*2);}
-    if(playingAction==='wave'){rotation=.085*Math.sin(progress*Math.PI*7);}
+    if(playingAction==='wave'){rotation=.035*Math.sin(progress*Math.PI*5);scale=1+.015*Math.sin(progress*Math.PI*4);}
     if(playingAction==='bow'){rotation=.12*Math.sin(Math.PI*progress);yOffset=Math.sin(Math.PI*progress)*h*.024;}
     if(playingAction==='sparkle'){scale=1+.035*Math.sin(progress*Math.PI*8);}
+    if(playingAction==='jump'){scale=1+.06*Math.sin(progress*Math.PI*2);}
     const imageSize=h*(isPortrait?.54:.72);
     const centerY=h*(isPortrait?.585:.56)+yOffset;
     ctx.save();ctx.translate(w*.5,centerY);ctx.rotate(rotation);ctx.scale(scale,scale);
@@ -307,7 +344,7 @@
         star(w*.5+Math.cos(angle)*rad,centerY+Math.sin(angle)*rad,10+(i%4)*3,i%2?'#e6a9ba':'#e6bb60');
       }
     }
-    if(playingAction==='say') drawSpeech((input.value.trim() || themes[theme].words).slice(0,28),w,h);
+    if(reactionWords || playingAction==='say') drawSpeech((reactionWords || input.value.trim() || themes[theme].words).slice(0,28),w,h);
     rr(w*.19,h*.89,w*.62,h*.065,35,'#ffffffaa');
     ctx.fillStyle='#558168';ctx.textAlign='center';ctx.font=`800 ${isPortrait?25:23}px "Malgun Gothic",sans-serif`;
     ctx.fillText('봄담이와 함께, 오늘도 한 걸음',w/2,h*.935);
@@ -333,6 +370,7 @@
     if(shouldSave && (!canvas.captureStream || typeof MediaRecorder==='undefined')) {
       message('이 브라우저는 영상 저장을 지원하지 않아요. 크롬이나 엣지에서 다시 시도해 주세요.');return;
     }
+    clearTimeout(reactionTimer);reactionWords='';synth?.cancel();
     playing=true;cancelRecord=false;
     const token=++session;
     const commands=[...blocks];
@@ -364,23 +402,31 @@
       if(session!==token)break;
       const kind=commands[index];
       const def=blockDefinitions[kind];
-      currentAction={kind,start:performance.now(),duration:def.duration};
+      const words=input.value.trim() || themes[theme].words;
+      const duration=kind==='say'?Math.max(def.duration,Math.min(6500,words.length*230+500)):def.duration;
+      currentAction={kind,start:performance.now(),duration};
+      $$('#stack .assembled').forEach((row,i)=>row.classList.toggle('is-running',i===index));
+      if(kind==='say' && !shouldSave)speak(words);
       message(`${index+1}/${commands.length} · ${def.label} 실행 중`);
-      await sleep(def.duration);
+      await sleep(duration);
     }
     if(session===token){
       currentAction=null;
       render(performance.now());
       if(shouldSave) await sleep(450);
       if(shouldSave){message('영상 파일을 마무리하는 중이에요.');discardRecord();}
-      else message('완성! 순서를 바꾸면 움직임도 달라져요.');
+      else {message('완성! 봄담이가 내 순서대로 움직였어요.');if(commands.join(',')==='wave,say,hearts'){$('#mission-status').textContent='🎉 인사 놀이 성공! 이번엔 다른 말로 인사해 볼까요?';}}
+      synth?.cancel();
+      $$('#stack .assembled').forEach(row=>row.classList.remove('is-running'));
     }
     if(session===token) {playing=false;toggleControls(false);}
   }
   playBtn.addEventListener('click',()=>run(false));
   videoBtn.addEventListener('click',()=>run(true));
   stopBtn.addEventListener('click',()=>{
-    if(!playing){message('정지 상태예요. 블록을 조립해 보세요.');return;}
+    synth?.cancel();clearTimeout(reactionTimer);reactionWords='';currentAction=null;
+    $$('#stack .assembled').forEach(row=>row.classList.remove('is-running'));
+    if(!playing){message('멈췄어요. 봄담이를 누르면 다시 인사해요.');return;}
     session+=1;cancelRecord=true;currentAction=null;discardRecord();playing=false;toggleControls(false);
     message('멈췄어요. 블록을 고쳐 다시 실행할 수 있어요.');
   });
