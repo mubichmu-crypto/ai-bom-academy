@@ -68,6 +68,38 @@
   }
   function $$(selector) { return document.querySelectorAll(selector); }
 
+  // Pointer dragging works with mouse and touch; click/arrow controls remain available.
+  function pointerDrag(element, data) {
+    element.draggable = false;
+    let origin = null, ghost = null, suppressClick = false;
+    const cleanup = () => { ghost?.remove(); ghost = null; origin = null; zone.classList.remove('is-over'); };
+    element.addEventListener('pointerdown', event => {
+      if (playing || event.button !== 0 || event.target.closest('.tiny')) return;
+      origin = {x:event.clientX,y:event.clientY,id:event.pointerId};
+      element.setPointerCapture(event.pointerId);
+    });
+    element.addEventListener('pointermove', event => {
+      if (!origin || event.pointerId !== origin.id) return;
+      if (!ghost && Math.hypot(event.clientX-origin.x,event.clientY-origin.y) < 8) return;
+      if (!ghost) { ghost=document.createElement('div');ghost.className='block-drag-ghost';ghost.textContent=element.querySelector('.name')?.textContent || element.textContent;document.body.append(ghost); }
+      ghost.style.left=(event.clientX+12)+'px';ghost.style.top=(event.clientY+12)+'px';
+      const hit=document.elementFromPoint(event.clientX,event.clientY);
+      zone.classList.toggle('is-over',Boolean(hit && zone.contains(hit)));
+      event.preventDefault();
+    });
+    element.addEventListener('pointerup', event => {
+      if (!origin || event.pointerId !== origin.id) return;
+      if (ghost) {
+        suppressClick=true;setTimeout(()=>{suppressClick=false;},0);
+        const hit=document.elementFromPoint(event.clientX,event.clientY);
+        if (!playing && hit && zone.contains(hit)) { const target=hit.closest('.assembled');onDrop(data(),target?Number(target.dataset.index):blocks.length); }
+      }
+      cleanup();
+    });
+    element.addEventListener('pointercancel',cleanup);
+    element.addEventListener('click',event=>{if(suppressClick){event.preventDefault();event.stopImmediatePropagation();}},true);
+  }
+
   function createStackBlock(kind, index) {
     const definition = blockDefinitions[kind];
     const row = document.createElement('div');
@@ -76,6 +108,7 @@
     row.dataset.index = String(index);
     row.setAttribute('role', 'listitem');
     row.setAttribute('aria-label', `${index + 1}번째 블록: ${definition.label}`);
+    pointerDrag(row, () => `move:${row.dataset.index}`);
     const number = document.createElement('span');
     number.className = 'ordinal';
     number.textContent = String(index + 1);
@@ -137,6 +170,7 @@
     else if (data.startsWith('move:')) moveBlock(Number(data.substring(5)), Math.min(index, blocks.length - 1));
   }
   $$('#palette button').forEach(button => {
+    pointerDrag(button, () => `new:${button.dataset.block}`);
     button.addEventListener('dragstart', event => {
       if (playing) { event.preventDefault(); return; }
       event.dataTransfer.setData('text/plain', `new:${button.dataset.block}`);
