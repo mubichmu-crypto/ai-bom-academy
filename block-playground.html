@@ -20,8 +20,8 @@
   <meta name="twitter:image" content="https://mubichmu-crypto.github.io/ai-bom-academy/assets/bomdam-heart.png">
   <meta name="theme-color" content="#f9f7f0">
   <title>봄담이 마음 카드 만들기 | AI봄 스튜디오</title>
-  <link rel="stylesheet" href="assets/block-playground.css?v=8">
-  <script defer src="assets/block-playground.js?v=8"></script>
+  <link rel="stylesheet" href="assets/block-playground.css?v=9">
+  <script defer src="assets/block-playground.js?v=9"></script>
 </head>
 <body>
   <a href="#workspace" class="skip-link">블록 놀이터로 바로 가기</a>
@@ -94,6 +94,7 @@
             <button type="button" data-react="hello">👋 인사하기</button><button type="button" data-react="praise">💗 칭찬하기</button><button type="button" data-react="tickle">😆 간질간질</button>
           </div>
           <label class="voice-toggle"><input type="checkbox" id="voice-enabled" checked> 봄담이 목소리 듣기</label>
+          <div class="motion-options voice-options"><label for="voice-choice">한국어 목소리</label><select id="voice-choice"><option value="">기기 기본 한국어 목소리</option></select><label for="voice-tone">말하는 느낌</label><select id="voice-tone"><option value="warm" selected>편안하고 다정하게</option><option value="clear">또렷하게</option></select><button type="button" id="voice-preview">짧게 들어보기</button></div><p class="input-hint" id="voice-choice-hint">기기의 한국어 목소리를 불러옵니다. 음색은 기기마다 다르며 저장 영상은 무음이에요.</p>
           <p class="input-hint" id="voice-hint">걷기·회전·춤 블록을 연결해 보세요. 봄담이를 눌러도 반응해요! ‘말하기’에서는 내가 쓴 문장을 읽어요. 기기 기본 음성을 사용합니다.</p>
           <div class="ratio-line"><span>영상 화면</span><fieldset class="ratio-switch" aria-label="영상 비율"><label><input type="radio" name="ratio" value="portrait" checked><span>세로 9:16</span></label><label><input type="radio" name="ratio" value="landscape"><span>가로 16:9</span></label></fieldset></div>
           <div class="stage-shell"><canvas id="stage" width="720" height="1280" role="button" tabindex="0" aria-label="봄담이 누르기: 반갑게 반응해요">이 브라우저에서는 애니메이션을 표시할 수 없습니다.</canvas><div class="stage-gloss" aria-hidden="true"></div></div>
