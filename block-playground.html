@@ -6,8 +6,8 @@
   <meta name="description" content="봄담이 블록 놀이터. 블록을 골라 연결하고, 봄담이를 움직이는 무료 코딩 체험입니다. 회원가입 없이 이용할 수 있어요.">
   <meta name="theme-color" content="#f9f7f0">
   <title>봄담이 블록 놀이터 | AI봄 스튜디오</title>
-  <link rel="stylesheet" href="assets/block-playground.css?v=2">
-  <script defer src="assets/block-playground.js?v=2"></script>
+  <link rel="stylesheet" href="assets/block-playground.css?v=3">
+  <script defer src="assets/block-playground.js?v=3"></script>
 </head>
 <body>
   <a href="#workspace" class="skip-link">블록 놀이터로 바로 가기</a>
@@ -44,6 +44,7 @@
           <label class="phrase-label" for="speech-input">봄담이가 할 말</label>
           <input id="speech-input" type="text" maxlength="28" value="안녕하세요!" autocomplete="off" spellcheck="false" aria-describedby="speech-hint">
           <p class="input-hint" id="speech-hint">문구를 직접 바꿔도 좋아요. ‘말하기’ 블록에서 나타나요.</p>
+          <div class="mission-card"><strong>🎯 오늘의 놀이: 나에게 인사해 줘!</strong><p>손 흔들기 → 말하기 → 하트 보내기를 연결하고 실행해 보세요.</p><button type="button" id="mission-load">인사 놀이 블록 넣기</button><p id="mission-status" role="status">내 이름을 넣어 말하기 문구를 바꿔보세요.</p></div>
           <div class="palette-head"><strong>명령 블록</strong><span>한 번씩 눌러보세요</span></div>
           <div id="palette" class="palette" aria-label="사용 가능한 블록">
             <button type="button" class="block block-motion" draggable="true" data-block="wave"><span aria-hidden="true">👋</span> 손 흔들기</button>
@@ -67,12 +68,17 @@
       <div class="work-left">
         <div class="panel preview-panel" id="preview">
           <div class="panel-heading"><div><span class="section-number">3</span><h2>실행하고 저장하기</h2></div><span class="panel-kicker">나만의 애니메이션</span></div>
+          <div class="reaction-bar" role="group" aria-label="봄담이와 놀기">
+            <button type="button" data-react="hello">👋 인사하기</button><button type="button" data-react="praise">💗 칭찬하기</button><button type="button" data-react="tickle">😆 간질간질</button>
+          </div>
+          <label class="voice-toggle"><input type="checkbox" id="voice-enabled" checked> 봄담이 목소리 듣기</label>
+          <p class="input-hint" id="voice-hint">봄담이를 눌러보세요! ‘말하기’에서는 내가 쓴 문장을 읽어요. 기기 기본 음성을 사용합니다.</p>
           <div class="ratio-line"><span>영상 화면</span><fieldset class="ratio-switch" aria-label="영상 비율"><label><input type="radio" name="ratio" value="portrait" checked><span>세로 9:16</span></label><label><input type="radio" name="ratio" value="landscape"><span>가로 16:9</span></label></fieldset></div>
-          <div class="stage-shell"><canvas id="stage" width="720" height="1280" role="img" aria-label="봄담이 애니메이션 미리보기">이 브라우저에서는 애니메이션을 표시할 수 없습니다.</canvas><div class="stage-gloss" aria-hidden="true"></div></div>
+          <div class="stage-shell"><canvas id="stage" width="720" height="1280" role="button" tabindex="0" aria-label="봄담이 누르기: 반갑게 반응해요">이 브라우저에서는 애니메이션을 표시할 수 없습니다.</canvas><div class="stage-gloss" aria-hidden="true"></div></div>
           <div class="stage-controls"><button class="button button-primary" type="button" id="play"><span aria-hidden="true">⚑</span> 블록 실행하기</button><button class="button button-outline" type="button" id="stop">■ 정지</button></div>
           <div class="export-controls"><button class="button button-soft" type="button" id="export-video">🎬 영상 저장 <small>WebM</small></button><button class="button button-soft" type="button" id="export-png">🖼️ 장면 저장 <small>PNG</small></button></div>
           <p class="status" id="status" role="status" aria-live="polite">오른쪽에서 블록을 연결해 보세요.</p>
-          <p class="note">영상은 현재 브라우저에서 직접 만들어 저장해요. WebM 파일에는 소리가 포함되지 않습니다. MP4나 음성 추가는 별도 편집이 필요해요.</p>
+          <p class="note">영상은 현재 브라우저에서 직접 만들어 저장해요. 목소리는 기기의 음성 합성 기능으로 재생돼요. 저장한 WebM 파일에는 소리가 포함되지 않습니다. MP4나 음성 추가는 별도 편집이 필요해요.</p>
         </div>
       </div>
     </section>
