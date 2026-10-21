@@ -3,9 +3,9 @@
   'use strict';
   const $ = (selector) => document.querySelector(selector);
   const themes = {
-    hello: { words: '안녕하세요!', caption: '반가운 인사', palette: ['#e6f5e9', '#f8f5d9'], sample: ['wave', 'say', 'sparkle'] },
-    happy: { words: '기뻐요!', caption: '즐거운 순간', palette: ['#ffece4', '#fff7d9'], sample: ['jump', 'say', 'hearts'] },
-    thanks: { words: '고마워요!', caption: '따뜻한 마음', palette: ['#fceaf1', '#faf7e3'], sample: ['bow', 'say', 'hearts'] }
+    hello: { words: '오늘도 수고했어요. 늘 응원할게요!', caption: '당신을 응원해요', palette: ['#e6f5e9', '#f8f5d9'], sample: ['wave', 'say', 'sparkle'] },
+    happy: { words: '생일 축하해요! 행복한 하루 보내세요.', caption: '생일 축하해요', palette: ['#ffece4', '#fff7d9'], sample: ['jump', 'say', 'hearts'] },
+    thanks: { words: '함께해 줘서 고마워요. 마음을 전해요!', caption: '고마운 당신에게', palette: ['#fceaf1', '#faf7e3'], sample: ['bow', 'say', 'hearts'] }
   };
   const blockDefinitions = {
     wave: { label: '👋 손 흔들기', color: 'motion', duration: 1550 },
@@ -40,6 +40,9 @@
   const videoBtn = $('#export-video');
   const pngBtn = $('#export-png');
   const maxBlocks = 14;
+  const recipient = $('#recipient');
+  const sender = $('#sender');
+  function cardWords(){return [recipient?.value.trim(),input.value.trim() || themes[theme].words].filter(Boolean).join(', ');}
 
   let theme = 'hello';
   let blocks = [];
@@ -99,6 +102,7 @@
     $$('input[name=ratio]').forEach(el => el.disabled = active);
     $$('#palette button').forEach(el => el.disabled = active);
     input.disabled = active;
+    [recipient,sender,$('#share-card')].forEach(el=>{if(el)el.disabled=active;});
     $$('[data-react],#mission-load').forEach(el=>el.disabled=active);
   }
   function $$(selector) { return document.querySelectorAll(selector); }
@@ -226,7 +230,7 @@
   function selectTheme(next) {
     if (playing || !themes[next]) return;
     theme = next;
-    blocks = [];
+    blocks = [...themes[next].sample];
     input.value = themes[theme].words;
     $$('.theme-card').forEach(button => {
       const selected = button.dataset.theme === theme;
@@ -235,11 +239,13 @@
     });
     updateStack();
     currentAction = null;
-    message('색깔 블록을 직접 골라 연결해 보세요.');
+    reactionWords='';clearTimeout(reactionTimer);synth?.cancel();
+    message('문구와 이름을 바꾸면 내 카드가 돼요.');
     render(performance.now());
   }
   $$('.theme-card').forEach(button => button.addEventListener('click', () => selectTheme(button.dataset.theme)));
   input.addEventListener('input', () => render(performance.now()));
+  [recipient,sender].forEach(el=>el?.addEventListener('input',()=>render(performance.now())));
   $$('input[name=ratio]').forEach(radio => radio.addEventListener('change', () => {
     if (playing) return;
     isPortrait = radio.value === 'portrait';
@@ -268,16 +274,19 @@
   function drawSpeech(text, w, h) {
     const portrait = isPortrait;
     const bubbleW = w * (portrait ? .82 : .45);
-    const bubbleH = h * (portrait ? .115 : .19);
+    const bubbleH = h * (portrait ? .18 : .28);
     const x = portrait ? (w - bubbleW) / 2 : w * .5;
-    const y = portrait ? h * .15 : h * .16;
+    const y = portrait ? h * .17 : h * .16;
     ctx.save();ctx.shadowColor='#62786125';ctx.shadowBlur=22;ctx.shadowOffsetY=8;
     rr(x, y, bubbleW, bubbleH, 35, '#fffefb');ctx.restore();
     ctx.strokeStyle='#ddb2a4';ctx.lineWidth=4;ctx.strokeRect(x+9,y+9,bubbleW-18,bubbleH-18);
     ctx.fillStyle='#5d453e';ctx.textAlign='center';ctx.textBaseline='middle';
-    let fontSize=portrait?45:39;
-    do {ctx.font=`800 ${fontSize}px "Malgun Gothic",system-ui,sans-serif`;if(ctx.measureText(text).width < bubbleW-55)break;fontSize-=1;} while(fontSize>22);
-    ctx.fillText(text,x+bubbleW/2,y+bubbleH/2,bubbleW-55);
+    const fontSize=portrait?34:27;
+    ctx.font=`800 ${fontSize}px "Malgun Gothic",system-ui,sans-serif`;
+    const lines=[];let line='';
+    for(const char of text){if(char==='\n'||(line && ctx.measureText(line+char).width>bubbleW-48)){lines.push(line);line=char==='\n'?'':char;}else line+=char;}if(line)lines.push(line);
+    const lineHeight=fontSize*1.4;
+    lines.slice(0,5).forEach((value,i)=>ctx.fillText(value,x+bubbleW/2,y+bubbleH/2+(i-(Math.min(lines.length,5)-1)/2)*lineHeight,bubbleW-48));
     ctx.textAlign='left';ctx.textBaseline='alphabetic';
   }
   function render(now) {
@@ -301,9 +310,9 @@
     }
     const headText=themes[theme].caption;
     ctx.textAlign='center';ctx.fillStyle='#60836b';ctx.font=`700 ${isPortrait?22:24}px "Malgun Gothic",sans-serif`;
-    ctx.fillText('AI봄 · 블록으로 만드는 한마디',w/2,h*.07);
+    ctx.fillText('봄담이가 전하는 마음 카드',w/2,h*.055);
     ctx.font=`900 ${isPortrait?48:38}px "Malgun Gothic",sans-serif`;
-    ctx.fillStyle='#41644d';ctx.fillText(headText,w/2,h*.12);
+    ctx.fillStyle='#41644d';ctx.fillText((recipient?.value.trim()?recipient.value.trim()+'에게':headText),w/2,h*.12);
     let form = theme==='happy'?'heart':theme==='thanks'?'thanks':'neutral';
     if(playingAction==='hearts')form='heart';
     if(playingAction==='bow')form='thanks';
@@ -344,10 +353,10 @@
         star(w*.5+Math.cos(angle)*rad,centerY+Math.sin(angle)*rad,10+(i%4)*3,i%2?'#e6a9ba':'#e6bb60');
       }
     }
-    if(reactionWords || playingAction==='say') drawSpeech((reactionWords || input.value.trim() || themes[theme].words).slice(0,28),w,h);
+    drawSpeech((reactionWords || input.value.trim() || themes[theme].words).slice(0,60),w,h);
     rr(w*.19,h*.89,w*.62,h*.065,35,'#ffffffaa');
     ctx.fillStyle='#558168';ctx.textAlign='center';ctx.font=`800 ${isPortrait?25:23}px "Malgun Gothic",sans-serif`;
-    ctx.fillText('봄담이와 함께, 오늘도 한 걸음',w/2,h*.935);
+    ctx.fillText(sender?.value.trim() || '마음을 담아, 봄담이',w/2,h*.935);
     ctx.textAlign='left';
   }
   function onFrame(time) { lastAnimationTime=time;render(time);requestAnimationFrame(onFrame); }
@@ -402,8 +411,8 @@
       if(session!==token)break;
       const kind=commands[index];
       const def=blockDefinitions[kind];
-      const words=input.value.trim() || themes[theme].words;
-      const duration=kind==='say'?Math.max(def.duration,Math.min(6500,words.length*230+500)):def.duration;
+      const words=cardWords();
+      const duration=kind==='say'?Math.max(def.duration,Math.min(16000,words.length*230+500)):def.duration;
       currentAction={kind,start:performance.now(),duration};
       $$('#stack .assembled').forEach((row,i)=>row.classList.toggle('is-running',i===index));
       if(kind==='say' && !shouldSave)speak(words);
@@ -430,15 +439,25 @@
     session+=1;cancelRecord=true;currentAction=null;discardRecord();playing=false;toggleControls(false);
     message('멈췄어요. 블록을 고쳐 다시 실행할 수 있어요.');
   });
-  pngBtn.addEventListener('click',()=>{
+  async function cardBlob(){
+    const oldWords=reactionWords,oldAction=currentAction;
+    reactionWords='';currentAction={kind:'say',start:performance.now(),duration:1900};render(performance.now());
+    const result=new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    reactionWords=oldWords;currentAction=oldAction;render(performance.now());
+    return result;
+  }
+  pngBtn.addEventListener('click',async()=>{if(playing)return;const blob=await cardBlob();if(blob){download(blob,'봄담이_마음카드.png');message('카드를 저장했어요. 카카오톡 채팅방에서 사진으로 첨부해 보세요.');}else message('카드 저장을 다시 시도해 주세요.');});
+  $('#share-card')?.addEventListener('click',async()=>{
     if(playing)return;
-    // A still image should include the learner's words, even after playback ends.
-    const previousAction = currentAction;
-    currentAction = {kind:'say',start:performance.now(),duration:1900};
-    render(performance.now());
-    canvas.toBlob(blob=>{if(blob)download(blob,`봄담이_${theme}_${isPortrait?'세로':'가로'}.png`);else message('이미지 저장에 실패했어요. 다시 시도해 주세요.');},'image/png');
-    currentAction = previousAction;
-    render(performance.now());
+    const shareButton=$('#share-card');shareButton.disabled=true;
+    try {
+      const blob=await cardBlob();if(!blob)throw new Error('No image');
+      const file=typeof File==='function'?new File([blob],'봄담이_마음카드.png',{type:'image/png'}):null;
+      if(file && navigator.canShare?.({files:[file]}) && navigator.share){
+        await navigator.share({files:[file],title:'봄담이 마음 카드'});message('공유창을 닫았어요. 선택한 앱에서 전송 여부를 확인해 주세요.');
+      }else{download(blob,'봄담이_마음카드.png');message('이 브라우저는 파일 공유 대신 카드를 저장했어요. 채팅방에서 사진으로 첨부해 주세요.');}
+    }catch(error){message(error.name==='AbortError'?'공유를 취소했어요. 카드는 그대로 있어요.':'공유창을 열지 못했어요. 카드 저장 버튼으로 저장해 주세요.');}
+    finally{shareButton.disabled=false;}
   });
   // Start with an empty, inviting workspace so the learner experiences connecting blocks.
   selectTheme('hello');
