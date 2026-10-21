@@ -107,7 +107,7 @@
     $$('input[name=ratio]').forEach(el => el.disabled = active);
     $$('#palette button').forEach(el => el.disabled = active);
     input.disabled = active;
-    $$('#motion-speed,#dance-demo').forEach(el=>el.disabled=active);
+    $$('#motion-speed,#dance-demo,#card-look,#repeat-count,#letter-example,[data-course]').forEach(el=>el.disabled=active);
     [recipient,sender,$('#share-card')].forEach(el=>{if(el)el.disabled=active;});
     $$('[data-react],#mission-load').forEach(el=>el.disabled=active);
   }
@@ -233,6 +233,10 @@
   $('#clear').addEventListener('click', () => { if (playing) return; blocks = []; updateStack(); message('블록을 모두 지웠어요. 처음부터 다시 만들어 보세요.'); });
   $('#example').addEventListener('click', () => { if (playing) return; blocks = [...themes[theme].sample]; updateStack(); message('예시 블록을 연결했어요. 이제 초록 깃발을 눌러보세요.'); });
 
+  $('#letter-example')?.addEventListener('click',()=>{if(playing)return;selectTheme('thanks');recipient.value='지우';sender.value='할머니가';input.value='지우야,\n네 웃음은 할머니의 선물이야.\n건강하게 자라줘서 고마워.\n사랑해.';$('#card-look').value='warm';blocks=['wave','say','hearts'];updateStack();render(performance.now());message('예시 편지를 넣었어요. 이름과 문구를 내 이야기로 바꿔보세요.');});
+  const courses={birthday:['wave','jump','dance','say','hearts'],cheer:['right','jump','left','say','sparkle'],love:['right','left','bow','say','hearts']};
+  $$('[data-course]').forEach(button=>button.addEventListener('click',()=>{if(playing)return;blocks=[...courses[button.dataset.course]];updateStack();message('동작 코스를 넣었어요. 문구는 그대로예요. 재생해 보세요.');}));
+  $('#card-look')?.addEventListener('change',()=>render(performance.now()));
   $('#dance-demo')?.addEventListener('click',()=>{if(playing)return;blocks=['wave','right','left','dance','spin','say','hearts'];updateStack();message('춤추는 카드 동작을 넣었어요. 재생해 보세요!');});
 
   function selectTheme(next) {
@@ -286,13 +290,22 @@
     const x = portrait ? (w - bubbleW) / 2 : w * .5;
     const y = portrait ? h * .17 : h * .16;
     ctx.save();ctx.shadowColor='#62786125';ctx.shadowBlur=22;ctx.shadowOffsetY=8;
-    rr(x, y, bubbleW, bubbleH, 35, '#fffefb');ctx.restore();
-    ctx.strokeStyle='#ddb2a4';ctx.lineWidth=4;ctx.strokeRect(x+9,y+9,bubbleW-18,bubbleH-18);
+    rr(x, y, bubbleW, bubbleH, 28, '#fffdf7');ctx.restore();
+    ctx.strokeStyle='#e6c8ae';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+28,y+bubbleH-18);ctx.lineTo(x+bubbleW-28,y+bubbleH-18);ctx.stroke();
     ctx.fillStyle='#5d453e';ctx.textAlign='center';ctx.textBaseline='middle';
     const fontSize=portrait?34:27;
-    ctx.font=`800 ${fontSize}px "Malgun Gothic",system-ui,sans-serif`;
-    const lines=[];let line='';
-    for(const char of text){if(char==='\n'||(line && ctx.measureText(line+char).width>bubbleW-48)){lines.push(line);line=char==='\n'?'':char;}else line+=char;}if(line)lines.push(line);
+    ctx.font=`600 ${fontSize}px "Batang","AppleMyungjo",serif`;
+    const lines=[];
+    for(const paragraph of text.split('\n')){
+      let line='';
+      for(const word of paragraph.split(/\s+/).filter(Boolean)){
+        const next=line?line+' '+word:word;
+        if(ctx.measureText(next).width<=bubbleW-48){line=next;continue;}
+        if(line){lines.push(line);line='';}
+        for(const char of word){if(line&&ctx.measureText(line+char).width>bubbleW-48){lines.push(line);line='';}line+=char;}
+      }
+      lines.push(line);
+    }
     const lineHeight=fontSize*1.4;
     lines.slice(0,5).forEach((value,i)=>ctx.fillText(value,x+bubbleW/2,y+bubbleH/2+(i-(Math.min(lines.length,5)-1)/2)*lineHeight,bubbleW-48));
     ctx.textAlign='left';ctx.textBaseline='alphabetic';
@@ -319,7 +332,8 @@
   function render(now) {
     if (!ctx) return;
     const w=canvas.width,h=canvas.height;
-    const colors=themes[theme].palette;
+    const look=$('#card-look')?.value || 'warm';
+    const colors=look==='night'?['#243550','#49516b']:look==='party'?['#fff0e9','#fff8e3']:['#fff5e9','#f7e6dc'];
     const gradient=ctx.createLinearGradient(0,0,w,h);
     gradient.addColorStop(0,colors[0]);gradient.addColorStop(1,colors[1]);ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);
     // Calm, consistent hand-drawn stage motifs.
@@ -336,10 +350,10 @@
       star(x,y,isPortrait?7:6, i%2?'#ffffffdc':'#f5c2be');
     }
     const headText=themes[theme].caption;
-    ctx.textAlign='center';ctx.fillStyle='#60836b';ctx.font=`700 ${isPortrait?22:24}px "Malgun Gothic",sans-serif`;
-    ctx.fillText('봄담이가 전하는 마음 카드',w/2,h*.055);
+    ctx.textAlign='center';ctx.fillStyle=look==='night'?'#fff0d6':'#8c7564';ctx.font=`700 ${isPortrait?22:24}px "Malgun Gothic",sans-serif`;
+    ctx.fillText(look==='night'?'오늘 밤, 너에게 닿기를':'너를 생각하며 쓰는 작은 편지',w/2,h*.055);
     ctx.font=`900 ${isPortrait?48:38}px "Malgun Gothic",sans-serif`;
-    ctx.fillStyle='#41644d';ctx.fillText((recipient?.value.trim()?recipient.value.trim()+'에게':headText),w/2,h*.12);
+    ctx.fillStyle=look==='night'?'#fff2da':'#765040';ctx.fillText((recipient?.value.trim()?recipient.value.trim()+'에게':headText),w/2,h*.12);
     let form = theme==='happy'?'heart':theme==='thanks'?'thanks':'neutral';
     if(playingAction==='hearts')form='heart';
     if(playingAction==='bow')form='thanks';
@@ -392,9 +406,11 @@
       }
     }
     drawSpeech((reactionWords || input.value.trim() || themes[theme].words).slice(0,60),w,h);
-    rr(w*.19,h*.89,w*.62,h*.065,35,'#ffffffaa');
-    ctx.fillStyle='#558168';ctx.textAlign='center';ctx.font=`800 ${isPortrait?25:23}px "Malgun Gothic",sans-serif`;
-    ctx.fillText(sender?.value.trim() || '마음을 담아, 봄담이',w/2,h*.935);
+    if(look==='party'){for(let i=0;i<24;i++){const drift=playing?now/1000:0;const xx=w*((i*.173+.04)%1),yy=h*((i*.137+drift*.08)% .86);star(xx,yy,4+i%3*2,['#dc9c95','#d9b968','#a7bca2'][i%3]);}}
+    if(look==='night'){for(let i=0;i<22;i++)star(w*((i*.193+.03)%1),h*((i*.129)% .88),3+i%3,'#fff4d3');}
+    rr(w*.19,h*.89,w*.62,h*.065,24,'#fffaf1e8');
+    ctx.fillStyle='#886050';ctx.textAlign='center';ctx.font=`800 ${isPortrait?25:23}px "Malgun Gothic",sans-serif`;
+    ctx.fillText(sender?.value.trim() || '사랑과 응원을 담아',w/2,h*.935);
     ctx.textAlign='left';
   }
   function onFrame(time) { lastAnimationTime=time;render(time);requestAnimationFrame(onFrame); }
@@ -421,7 +437,8 @@
     motionX=0;
     playing=true;cancelRecord=false;
     const token=++session;
-    const commands=[...blocks];
+    const repeats=Number($('#repeat-count')?.value)||1;
+    const commands=Array.from({length:repeats},()=>blocks).flat();
     toggleControls(true);
     if(shouldSave){
       try {
@@ -488,19 +505,7 @@
     reactionWords=oldWords;currentAction=oldAction;render(performance.now());
     return result;
   }
-  pngBtn.addEventListener('click',async()=>{if(playing)return;const blob=await cardBlob();if(blob){download(blob,'봄담이_마음카드.png');message('카드를 저장했어요. 카카오톡 채팅방에서 사진으로 첨부해 보세요.');}else message('카드 저장을 다시 시도해 주세요.');});
-  $('#share-card')?.addEventListener('click',async()=>{
-    if(playing)return;
-    const shareButton=$('#share-card');shareButton.disabled=true;
-    try {
-      const blob=await cardBlob();if(!blob)throw new Error('No image');
-      const file=typeof File==='function'?new File([blob],'봄담이_마음카드.png',{type:'image/png'}):null;
-      if(file && navigator.canShare?.({files:[file]}) && navigator.share){
-        await navigator.share({files:[file],title:'봄담이 마음 카드'});message('공유창을 닫았어요. 선택한 앱에서 전송 여부를 확인해 주세요.');
-      }else{download(blob,'봄담이_마음카드.png');message('이 브라우저는 파일 공유 대신 카드를 저장했어요. 채팅방에서 사진으로 첨부해 주세요.');}
-    }catch(error){message(error.name==='AbortError'?'공유를 취소했어요. 카드는 그대로 있어요.':'공유창을 열지 못했어요. 카드 저장 버튼으로 저장해 주세요.');}
-    finally{shareButton.disabled=false;}
-  });
+  pngBtn.addEventListener('click',async()=>{if(playing)return;const blob=await cardBlob();if(blob){download(blob,'봄담이_마음카드.png');message('사진 카드를 저장했어요. 아래 ② 안내대로 카톡에 파일을 첨부하세요.');$('#send-guide')?.classList.add('is-ready');}else message('카드 저장을 다시 시도해 주세요.');});
   // Start with an empty, inviting workspace so the learner experiences connecting blocks.
   selectTheme('hello');
 })();
