@@ -326,7 +326,7 @@
     if(playingAction==='jump'){scale=1+.06*Math.sin(progress*Math.PI*2);}
     const imageSize=h*(isPortrait?.54:.72);
     const centerY=h*(isPortrait?.585:.56)+yOffset;
-    ctx.save();ctx.translate(w*.5,centerY);ctx.rotate(rotation);ctx.scale(scale,scale);
+    ctx.save();ctx.translate(w*(isPortrait?.5:.25),centerY);ctx.rotate(rotation);ctx.scale(scale,scale);
     if(img&&img.complete&&img.naturalWidth>0){
       const z=Math.min(imageSize/img.naturalHeight,w*(isPortrait?.95:.56)/img.naturalWidth);
       const iw=img.naturalWidth*z,ih=img.naturalHeight*z;
@@ -337,7 +337,7 @@
     ctx.restore();
     if(playingAction==='wave'){
       ctx.save();ctx.strokeStyle='#d48a74';ctx.lineWidth=isPortrait?7:6;ctx.lineCap='round';
-      const handX=w*(isPortrait?.75:.715),handY=centerY-h*.065;
+      const handX=w*(isPortrait?.75:.43),handY=centerY-h*.065;
       for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(handX,handY,(i+1)*17+7,Math.PI*1.22,Math.PI*1.8);ctx.stroke();}ctx.restore();
     }
     if(playingAction==='hearts'){
@@ -350,7 +350,7 @@
       for(let i=0;i<16;i++){
         const angle=(i/16)*Math.PI*2+progress*.8;
         const rad=h*(.19+.03*Math.sin(progress*11+i));
-        star(w*.5+Math.cos(angle)*rad,centerY+Math.sin(angle)*rad,10+(i%4)*3,i%2?'#e6a9ba':'#e6bb60');
+        star(w*(isPortrait?.5:.25)+Math.cos(angle)*rad,centerY+Math.sin(angle)*rad,10+(i%4)*3,i%2?'#e6a9ba':'#e6bb60');
       }
     }
     drawSpeech((reactionWords || input.value.trim() || themes[theme].words).slice(0,60),w,h);
