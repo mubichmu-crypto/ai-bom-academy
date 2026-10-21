@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="봄담이 블록 놀이터. 블록을 골라 연결하고, 봄담이를 움직이는 무료 코딩 체험입니다. 회원가입 없이 이용할 수 있어요.">
+  <meta name="theme-color" content="#f9f7f0">
+  <title>봄담이 블록 놀이터 | AI봄 스튜디오</title>
+  <link rel="stylesheet" href="assets/block-playground.css?v=1">
+  <script defer src="assets/block-playground.js?v=1"></script>
+</head>
+<body>
+  <a href="#workspace" class="skip-link">블록 놀이터로 바로 가기</a>
+  <header class="global-header">
+    <a class="brand" href="index.html" aria-label="AI봄 스튜디오 홈으로"><span class="brand-mark" aria-hidden="true">🌱</span><span>AI봄 <small>STUDIO</small></span></a>
+    <nav aria-label="사이트 메뉴">
+      <a href="index.html">AI봄 홈</a>
+      <a href="character-plaza.html">봄담이 만나기</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <span class="eyebrow">AI봄 무료 체험 · BLOCK PLAYGROUND</span>
+        <h1 id="page-title">블록 하나, <em>움직임 하나.</em><br>봄담이 블록 놀이터</h1>
+        <p class="lead">블록을 골라 끌어놓고, 초록 깃발을 눌러보세요.<br>내가 조립한 순서대로 봄담이가 움직여요.</p>
+        <div class="hero-chips"><span>회원가입 없이</span><span>마음껏 다시 만들기</span><span>내 영상 저장하기</span></div>
+      </div>
+      <div class="hero-art" aria-hidden="true"><div class="flower flower-one">✿</div><div class="flower flower-two">✿</div><img src="assets/bomdam-neutral.png" alt=""><div class="hero-bubble">오늘은 뭘 만들까?</div></div>
+    </section>
+    <section class="choose" aria-labelledby="theme-title">
+      <div class="section-head"><div><span class="section-number">01</span><h2 id="theme-title">어떤 장면을 만들까요?</h2></div><p>하나를 골라도 블록은 마음대로 조립할 수 있어요.</p></div>
+      <div class="theme-grid" role="group" aria-label="체험 장면 고르기">
+        <button type="button" class="theme-card is-selected" data-theme="hello" aria-pressed="true"><span class="theme-symbol">👋</span><span><strong>안녕하세요!</strong><small>반가운 인사를 전해요</small></span><span class="theme-check" aria-hidden="true">✓</span></button>
+        <button type="button" class="theme-card" data-theme="happy" aria-pressed="false"><span class="theme-symbol">🎉</span><span><strong>기뻐요!</strong><small>마음껏 신나게 움직여요</small></span><span class="theme-check" aria-hidden="true">✓</span></button>
+        <button type="button" class="theme-card" data-theme="thanks" aria-pressed="false"><span class="theme-symbol">💗</span><span><strong>고마워요!</strong><small>따뜻한 마음을 전해요</small></span><span class="theme-check" aria-hidden="true">✓</span></button>
+      </div>
+    </section>
+    <section class="work" id="workspace" aria-label="블록 체험 작업실">
+      <div class="work-left">
+        <div class="panel preview-panel">
+          <div class="panel-heading"><div><span class="section-number">02</span><h2>봄담이 움직임 보기</h2></div><span class="panel-kicker">나만의 애니메이션</span></div>
+          <div class="ratio-line"><span>영상 화면</span><fieldset class="ratio-switch" aria-label="영상 비율"><label><input type="radio" name="ratio" value="portrait" checked><span>세로 9:16</span></label><label><input type="radio" name="ratio" value="landscape"><span>가로 16:9</span></label></fieldset></div>
+          <div class="stage-shell"><canvas id="stage" width="720" height="1280" role="img" aria-label="봄담이 애니메이션 미리보기">이 브라우저에서는 애니메이션을 표시할 수 없습니다.</canvas><div class="stage-gloss" aria-hidden="true"></div></div>
+          <div class="stage-controls"><button class="button button-primary" type="button" id="play"><span aria-hidden="true">⚑</span> 블록 실행하기</button><button class="button button-outline" type="button" id="stop">■ 정지</button></div>
+          <div class="export-controls"><button class="button button-soft" type="button" id="export-video">🎬 영상 저장 <small>WebM</small></button><button class="button button-soft" type="button" id="export-png">🖼️ 장면 저장 <small>PNG</small></button></div>
+          <p class="status" id="status" role="status" aria-live="polite">오른쪽에서 블록을 연결해 보세요.</p>
+          <p class="note">영상은 현재 브라우저에서 직접 만들어 저장해요. WebM 파일에는 소리가 포함되지 않습니다. MP4나 음성 추가는 별도 편집이 필요해요.</p>
+        </div>
+      </div>
+      <div class="work-right">
+        <div class="panel editor-panel">
+          <div class="panel-heading"><div><span class="section-number">03</span><h2>색깔 블록 조립하기</h2></div><span class="panel-kicker">끌거나 눌러 추가</span></div>
+          <label class="phrase-label" for="speech-input">봄담이가 할 말</label>
+          <input id="speech-input" type="text" maxlength="28" value="안녕하세요!" autocomplete="off" spellcheck="false" aria-describedby="speech-hint">
+          <p class="input-hint" id="speech-hint">문구를 직접 바꿔도 좋아요. ‘말하기’ 블록에서 나타나요.</p>
+          <div class="palette-head"><strong>명령 블록</strong><span>드래그하거나 클릭해요</span></div>
+          <div id="palette" class="palette" aria-label="사용 가능한 블록">
+            <button type="button" class="block block-motion" draggable="true" data-block="wave"><span aria-hidden="true">👋</span> 손 흔들기</button>
+            <button type="button" class="block block-looks" draggable="true" data-block="say"><span aria-hidden="true">💬</span> 말하기</button>
+            <button type="button" class="block block-motion" draggable="true" data-block="jump"><span aria-hidden="true">↥</span> 점프하기</button>
+            <button type="button" class="block block-heart" draggable="true" data-block="hearts"><span aria-hidden="true">♥</span> 하트 보내기</button>
+            <button type="button" class="block block-looks" draggable="true" data-block="bow"><span aria-hidden="true">♡</span> 고개 숙이기</button>
+            <button type="button" class="block block-control" draggable="true" data-block="wait"><span aria-hidden="true">◷</span> 1초 기다리기</button>
+            <button type="button" class="block block-magic" draggable="true" data-block="sparkle"><span aria-hidden="true">✦</span> 반짝이기</button>
+          </div>
+          <div class="stack-header"><strong>내가 조립한 블록 <span id="block-count">0</span></strong><button class="text-button" type="button" id="clear">모두 지우기</button></div>
+          <div id="dropzone" class="dropzone" aria-label="블록 조립 공간" aria-describedby="drop-hint">
+            <div class="start-block"><span aria-hidden="true">⚑</span> 초록 깃발을 클릭했을 때</div><div id="stack" class="stack" role="list"></div><div id="empty-hint" class="empty-hint">여기에 블록을 놓아 보세요.<br><span>순서대로 이어져요.</span></div>
+          </div>
+          <p id="drop-hint" class="input-hint">블록의 ↑ ↓ 버튼으로 순서를 바꾸고 × 버튼으로 삭제해요.</p>
+          <button class="button example-button" type="button" id="example">처음이라면? 예시 블록 넣기 →</button>
+        </div>
+        <aside class="tip-card"><span class="tip-icon" aria-hidden="true">✦</span><div><strong>블록의 순서도 작품이 돼요.</strong><p>‘말하기 → 점프하기’와 ‘점프하기 → 말하기’는 서로 다른 움직임이랍니다.</p></div></aside>
+      </div>
+    </section>
+    <section class="afterword"><strong>만드는 즐거움이 시작되는 곳, AI봄</strong><p>이 놀이터는 스크래치·엔트리처럼 블록을 조립하는 방법에서 아이디어를 얻은 AI봄의 간단한 체험입니다. 정식 스크래치·엔트리 편집기는 아니에요.</p><a href="index.html">AI봄 스튜디오 돌아가기 ↗</a></section>
+  </main>
+  <footer>© AI봄 스튜디오 · 봄담이와 함께하는 무료 체험</footer>
+</body>
+</html>
