@@ -58,6 +58,18 @@
   let recorder = null;
   let recordingStream = null;
   let chunks = [];
+  let finishedBlob=null,finishedURL=null,posterURL=null,finishedName='';
+  let videoRevision=0;
+  function markVideoEdited(){
+    videoRevision++;
+    const save=$('#save-finished-video');if(save)save.disabled=true;
+    if(finishedBlob)$('#video-review-status').textContent='카드를 수정했어요. 새 미리보기를 만든 뒤 저장해 주세요.';
+  }
+  function releasePreview(){if(finishedURL)URL.revokeObjectURL(finishedURL);if(posterURL)URL.revokeObjectURL(posterURL);finishedURL=null;posterURL=null;}
+  $('#save-finished-video')?.addEventListener('click',()=>{if(!finishedBlob||$('#save-finished-video').disabled)return;download(finishedBlob,finishedName);message('확인한 영상을 저장했어요. 카톡에서 다운로드 파일을 첨부해 주세요.');});
+  $('#edit-video')?.addEventListener('click',()=>{$('#finished-video').pause();$('#editor').scrollIntoView?.({behavior:'smooth',block:'start'});input.focus();});
+  window.addEventListener?.('beforeunload',releasePreview);
+  $$('input,textarea,select').forEach(el=>{el.addEventListener('input',markVideoEdited);el.addEventListener('change',markVideoEdited);});
   let cancelRecord = false;
   let audioEnabled = true;
   let reactionWords = '';
@@ -191,6 +203,7 @@
     return row;
   }
   function updateStack() {
+    markVideoEdited();
     stack.replaceChildren();
     blocks.forEach((kind, index) => stack.append(createStackBlock(kind, index)));
     $('#block-count').textContent = String(blocks.length);
@@ -434,9 +447,11 @@
       message('이 브라우저는 영상 저장을 지원하지 않아요. 크롬이나 엣지에서 다시 시도해 주세요.');return;
     }
     clearTimeout(reactionTimer);reactionWords='';synth?.cancel();
+    if(shouldSave){markVideoEdited();$('#finished-video')?.pause();}
     motionX=0;
     playing=true;cancelRecord=false;
     const token=++session;
+    const recordingRevision=videoRevision;
     const repeats=Number($('#repeat-count')?.value)||1;
     const commands=Array.from({length:repeats},()=>blocks).flat();
     toggleControls(true);
@@ -452,8 +467,18 @@
         recorder.addEventListener('stop',()=>{
           if(cancelRecord || session !== token)return;
           if(chunks.length===0){message('영상 파일이 비어 있어요. 다시 시도해 주세요.');return;}
-          download(new Blob(chunks,{type:'video/webm'}),`봄담이_${theme}_${isPortrait?'세로':'가로'}.webm`);
-          message('영상이 준비됐어요. 브라우저 다운로드 목록을 확인해 주세요.');
+          releasePreview();
+          finishedBlob=new Blob(chunks,{type:'video/webm'});
+          finishedURL=URL.createObjectURL(finishedBlob);
+          finishedName=`봄담이_${theme}_${isPortrait?'세로':'가로'}.webm`;
+          const review=$('#video-review'),video=$('#finished-video');
+          video.src=finishedURL;video.load();review.hidden=false;
+          canvas.toBlob(blob=>{if(blob && session===token){if(posterURL)URL.revokeObjectURL(posterURL);posterURL=URL.createObjectURL(blob);video.poster=posterURL;}},'image/png');
+          $('#save-finished-video').disabled=videoRevision!==recordingRevision;
+          $('#video-review-status').textContent=videoRevision===recordingRevision?'아직 저장하지 않았어요. 재생해서 보고 마음에 들면 아래 저장 버튼을 누르세요.':'수정 전 영상이에요. 새 미리보기를 만들어 주세요.';
+          message('영상 완성본이 준비됐어요. 아래에서 재생해 본 뒤 저장하세요.');
+          review.scrollIntoView?.({behavior:'smooth',block:'start'});
+          $('#video-review-title').focus();
         },{once:true});
         recorder.start(200);
         await sleep(250);
@@ -482,7 +507,7 @@
       currentAction=null;
       render(performance.now());
       if(shouldSave) await sleep(450);
-      if(shouldSave){message('영상 파일을 마무리하는 중이에요.');discardRecord();}
+      if(shouldSave){message('영상 미리보기를 마무리하는 중이에요.');discardRecord();}
       else {message('완성! 봄담이가 내 순서대로 움직였어요.');if(commands.join(',')==='wave,say,hearts'){$('#mission-status').textContent='🎉 인사 놀이 성공! 이번엔 다른 말로 인사해 볼까요?';}}
       synth?.cancel();
       $$('#stack .assembled').forEach(row=>row.classList.remove('is-running'));
