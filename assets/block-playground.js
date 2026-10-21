@@ -8,6 +8,10 @@
     thanks: { words: '함께해 줘서 고마워요. 마음을 전해요!', caption: '고마운 당신에게', palette: ['#fceaf1', '#faf7e3'], sample: ['bow', 'say', 'hearts'] }
   };
   const blockDefinitions = {
+    left: {label:'← 왼쪽으로 걷기',color:'motion',duration:1600},
+    right: {label:'→ 오른쪽으로 걷기',color:'motion',duration:1600},
+    dance: {label:'♫ 춤추기',color:'magic',duration:2600},
+    spin: {label:'⟳ 한 바퀴 돌기',color:'looks',duration:1800},
     wave: { label: '👋 손 흔들기', color: 'motion', duration: 1550 },
     say: { label: '💬 말하기', color: 'looks', duration: 1900 },
     jump: { label: '↥ 점프하기', color: 'motion', duration: 1600 },
@@ -44,6 +48,7 @@
   const sender = $('#sender');
   function cardWords(){return [recipient?.value.trim(),input.value.trim() || themes[theme].words].filter(Boolean).join(', ');}
 
+  let motionX=0;
   let theme = 'hello';
   let blocks = [];
   let currentAction = null;
@@ -102,6 +107,7 @@
     $$('input[name=ratio]').forEach(el => el.disabled = active);
     $$('#palette button').forEach(el => el.disabled = active);
     input.disabled = active;
+    $$('#motion-speed,#dance-demo').forEach(el=>el.disabled=active);
     [recipient,sender,$('#share-card')].forEach(el=>{if(el)el.disabled=active;});
     $$('[data-react],#mission-load').forEach(el=>el.disabled=active);
   }
@@ -227,9 +233,11 @@
   $('#clear').addEventListener('click', () => { if (playing) return; blocks = []; updateStack(); message('블록을 모두 지웠어요. 처음부터 다시 만들어 보세요.'); });
   $('#example').addEventListener('click', () => { if (playing) return; blocks = [...themes[theme].sample]; updateStack(); message('예시 블록을 연결했어요. 이제 초록 깃발을 눌러보세요.'); });
 
+  $('#dance-demo')?.addEventListener('click',()=>{if(playing)return;blocks=['wave','right','left','dance','spin','say','hearts'];updateStack();message('춤추는 카드 동작을 넣었어요. 재생해 보세요!');});
+
   function selectTheme(next) {
     if (playing || !themes[next]) return;
-    theme = next;
+    theme = next;motionX=0;
     blocks = [...themes[next].sample];
     input.value = themes[theme].words;
     $$('.theme-card').forEach(button => {
@@ -289,6 +297,25 @@
     lines.slice(0,5).forEach((value,i)=>ctx.fillText(value,x+bubbleW/2,y+bubbleH/2+(i-(Math.min(lines.length,5)-1)/2)*lineHeight,bubbleW-48));
     ctx.textAlign='left';ctx.textBaseline='alphabetic';
   }
+  function drawPuppet(img,iw,ih,kind,progress,now){
+    const walking=kind==='left'||kind==='right';
+    const dancing=kind==='dance';
+    const cycle=progress*Math.PI*(walking?8:dancing?10:4);
+    const headTilt=reducedMotion?0:(kind==='wave'?Math.sin(cycle)*.085:dancing?Math.sin(cycle)*.09:gaze*.035+Math.sin(now/1100)*.008);
+    const drawPart=(top,bottom,pivotX,pivotY,angle,dy=0)=>{
+      ctx.save();ctx.translate(pivotX,pivotY+dy);ctx.rotate(angle);ctx.translate(-pivotX,-pivotY);
+      ctx.beginPath();ctx.rect(-iw/2,-ih/2+ih*top,iw,ih*(bottom-top));ctx.clip();
+      ctx.drawImage(img,-iw/2,-ih/2,iw,ih);ctx.restore();
+    };
+    // Legs alternate while walking; head pivots at the neck, independently of the dress.
+    drawPart(.59,.845,0,ih*.2,0);
+    for(const side of [-1,1]){
+      ctx.save();ctx.beginPath();ctx.rect(side<0?-iw/2:0,ih*.34,iw/2,ih*.2);ctx.clip();
+      const footSwing=(walking||dancing)&&!reducedMotion?Math.sin(cycle+ (side<0?0:Math.PI))*.2:0;
+      drawPart(.835,1,side*iw*.045,ih*.34,footSwing,Math.max(0,Math.sin(cycle)*side)*-ih*.012);ctx.restore();
+    }
+    drawPart(0,.64,0,ih*.13,headTilt);
+  }
   function render(now) {
     if (!ctx) return;
     const w=canvas.width,h=canvas.height;
@@ -316,21 +343,32 @@
     let form = theme==='happy'?'heart':theme==='thanks'?'thanks':'neutral';
     if(playingAction==='hearts')form='heart';
     if(playingAction==='bow')form='thanks';
+    if(['left','right','dance','spin','wave','jump'].includes(playingAction))form='neutral';
     const img=images[form];
+    const walking=playingAction==='left'||playingAction==='right';
+    const ease=progress*progress*(3-2*progress);
+    const travel=walking?(currentAction.fromX+(currentAction.toX-currentAction.fromX)*ease):motionX;
+    let xOffset=w*travel;
     let yOffset=reducedMotion?0:Math.sin(now/800)*h*.003,rotation=0,scale=1;
     if(!currentAction && !reducedMotion)rotation=gaze*.025;
-    if(playingAction==='jump'){yOffset=-Math.sin(progress*Math.PI)*h*.115;rotation=.055*Math.sin(progress*Math.PI*2);}
+    if(playingAction==='jump'){const flight=Math.sin(progress*Math.PI);yOffset=-flight*h*.14;rotation=.04*Math.sin(progress*Math.PI*2);}
     if(playingAction==='wave'){rotation=.035*Math.sin(progress*Math.PI*5);scale=1+.015*Math.sin(progress*Math.PI*4);}
     if(playingAction==='bow'){rotation=.12*Math.sin(Math.PI*progress);yOffset=Math.sin(Math.PI*progress)*h*.024;}
     if(playingAction==='sparkle'){scale=1+.035*Math.sin(progress*Math.PI*8);}
     if(playingAction==='jump'){scale=1+.06*Math.sin(progress*Math.PI*2);}
-    const imageSize=h*(isPortrait?.54:.72);
+    if(walking&&!reducedMotion){yOffset=-Math.abs(Math.sin(progress*Math.PI*8))*h*.009;rotation=.018*Math.sin(progress*Math.PI*8);}
+    if(playingAction==='dance'&&!reducedMotion){xOffset+=Math.sin(progress*Math.PI*6)*w*.045;yOffset=-Math.abs(Math.sin(progress*Math.PI*10))*h*.018;rotation=Math.sin(progress*Math.PI*10)*.055;}
+    if(playingAction==='spin'&&!reducedMotion)rotation=ease*Math.PI*2;
+    if(reducedMotion){yOffset=0;rotation=0;scale=1;}
+    const imageSize=h*(isPortrait?.49:.65);
     const centerY=h*(isPortrait?.585:.56)+yOffset;
-    ctx.save();ctx.translate(w*(isPortrait?.5:.25),centerY);ctx.rotate(rotation);ctx.scale(scale,scale);
+    // Ground shadow anchors the jump and shrinks as the character rises.
+    ctx.save();ctx.fillStyle='#49644724';ctx.beginPath();ctx.ellipse(w*(isPortrait?.5:.25)+xOffset,h*(isPortrait?.79:.84),w*.12*(1+Math.min(0,yOffset/h)*2),h*.012,0,0,Math.PI*2);ctx.fill();ctx.restore();
+    ctx.save();ctx.translate(w*(isPortrait?.5:.25)+xOffset,centerY);ctx.rotate(rotation);ctx.scale(scale,scale);
     if(img&&img.complete&&img.naturalWidth>0){
       const z=Math.min(imageSize/img.naturalHeight,w*(isPortrait?.95:.56)/img.naturalWidth);
       const iw=img.naturalWidth*z,ih=img.naturalHeight*z;
-      ctx.drawImage(img,-iw/2,-ih/2,iw,ih);
+      if(form==='neutral')drawPuppet(img,iw,ih,playingAction,progress,now);else ctx.drawImage(img,-iw/2,-ih/2,iw,ih);
     }else{
       ctx.fillStyle='#769475';ctx.font=`${isPortrait?72:65}px sans-serif`;ctx.fillText('🌱',0,30);
     }
@@ -380,6 +418,7 @@
       message('이 브라우저는 영상 저장을 지원하지 않아요. 크롬이나 엣지에서 다시 시도해 주세요.');return;
     }
     clearTimeout(reactionTimer);reactionWords='';synth?.cancel();
+    motionX=0;
     playing=true;cancelRecord=false;
     const token=++session;
     const commands=[...blocks];
@@ -412,12 +451,15 @@
       const kind=commands[index];
       const def=blockDefinitions[kind];
       const words=cardWords();
-      const duration=kind==='say'?Math.max(def.duration,Math.min(16000,words.length*230+500)):def.duration;
-      currentAction={kind,start:performance.now(),duration};
+      const speed=Number($('#motion-speed')?.value)||1;
+      const duration=kind==='say'?Math.max(def.duration,Math.min(16000,words.length*230+500)):def.duration/speed;
+      const toX=Math.max(-.14,Math.min(.14,motionX+(kind==='left'?-.14:kind==='right'?.14:0)));
+      currentAction={kind,start:performance.now(),duration,fromX:motionX,toX};
       $$('#stack .assembled').forEach((row,i)=>row.classList.toggle('is-running',i===index));
       if(kind==='say' && !shouldSave)speak(words);
       message(`${index+1}/${commands.length} · ${def.label} 실행 중`);
       await sleep(duration);
+      if(session===token)motionX=toX;
     }
     if(session===token){
       currentAction=null;
