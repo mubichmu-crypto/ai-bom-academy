@@ -1,6 +1,7 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
+  const editWarning = $('card-edit-warning') || document.createElement('p');
   const textFields = ['card-brand','card-name','card-role','card-phone','card-email','card-web','card-address','card-back-title','card-description','card-qr-url'];
   const savedFields = [...textFields,'card-font','card-scale','card-bg','card-accent','card-back-layout','card-sides','card-paper','card-quantity'];
   const themes = {classic:['#fffdf6','#315a43'],color:['#fff1e7','#874b3d'],center:['#f6f3e9','#3e586c']};
@@ -106,6 +107,8 @@
     $('card-photo-fields').hidden=$('card-back-layout').value!=='photo';
     $('card-qr-fields').hidden=$('card-back-layout').value!=='qr';
     $('card-back-figure').hidden=side==='single';
+    if($('card-back-fields')){$('card-back-fields').hidden=side==='single';$('card-back-fields').disabled=side==='single';}
+    editWarning.hidden=true;
     document.querySelectorAll('.card-safe').forEach(el=>el.hidden=!$('card-guides').checked);
     try{
       for(const s of side==='double'?['front','back']:['front']){const result=paint(s);const target=$('card-'+s);target.getContext('2d').drawImage(result,0,0);target.setAttribute('aria-label','명함 '+(s==='front'?'앞면: '+value('card-name'):'뒷면: '+value('card-back-title')));}
@@ -114,7 +117,8 @@
       if($('card-back-layout').value==='photo'&&side==='double'&&!photo)note+=' 뒷면 사진을 선택하세요.';
       if((logo&&Math.min(logo.width,logo.height)<180)||(photo&&Math.min(photo.width,photo.height)<500))note+=' 사진·로고 원본이 작아 확대 인쇄 시 흐릴 수 있습니다.';
       $('card-status').textContent=note;
-    }catch(error){$('card-status').textContent=error.message;}
+      if(!valid){editWarning.textContent='뒷면 사진을 넣거나 소개 문구형을 선택하면 저장할 수 있습니다.';editWarning.hidden=false;}
+    }catch(error){$('card-status').textContent=error.message;editWarning.textContent=error.message;editWarning.hidden=false;}
     updateButtons();
   }
   function updateButtons(){for(const id of ['download-card-pdf','download-card-front','download-card-back'])$(id).disabled=!valid||exporting||(id==='download-card-back'&&$('card-sides').value==='single');}

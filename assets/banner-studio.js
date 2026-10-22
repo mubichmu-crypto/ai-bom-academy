@@ -1,6 +1,7 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
+  const editWarning = $('banner-edit-warning') || document.createElement('p');
   const fields = ['banner-kicker', 'banner-title', 'banner-detail', 'banner-host'];
   const examples = {
     seollal: ['따뜻한 마음을 나누는 설날', '새해 복 많이 받으세요', '건강하고 행복한 명절 보내세요', ''],
@@ -94,6 +95,8 @@
     $('print-conditions').textContent = orderConditions();
     const id = ++renderId;
     ready = false;
+    editWarning.hidden=true;
+    for (const button of [$('download-banner-png'),$('download-banner-svg')]) button.disabled=true;
     try {
       const data = buildSvg();
       const url = URL.createObjectURL(new Blob([data.source], {type:'image/svg+xml;charset=utf-8'}));
@@ -104,11 +107,13 @@
       if (id !== renderId) return;
       canvas.width = data.W; canvas.height = Math.round(data.H);
       ctx.drawImage(img,0,0,canvas.width,canvas.height);
-      svgSource = data.source; ready = true;
+      svgSource = data.source; ready = !data.truncated;
       canvas.setAttribute('aria-label', `현수막 미리보기: ${$('banner-title').value}, ${themes[theme].name}`);
       $('banner-dimensions').textContent = `${data.w} × ${data.h} cm 비율 · 가로 ${data.W.toLocaleString()}px`;
-      $('banner-status').textContent = data.truncated ? '긴 문구의 일부가 생략되었습니다. 문구나 줄바꿈을 줄여 주세요.' : '미리보기를 확인한 뒤 저장하세요. 날짜·장소·이름은 한 번 더 확인해 주세요.';
+      $('banner-status').textContent = data.truncated ? '문구가 잘려 저장을 잠시 막았습니다. 문구나 줄바꿈을 줄이면 다시 저장할 수 있습니다.' : '미리보기를 확인한 뒤 저장하세요. 날짜·장소·이름은 한 번 더 확인해 주세요.';
     } catch (error) { if(id === renderId) $('banner-status').textContent = error.message || '미리보기를 만들지 못했습니다. 다시 시도해 주세요.'; }
+    if(id!==renderId)return;
+    if(!ready){editWarning.textContent=$('banner-status').textContent;editWarning.hidden=false;}
     for (const button of [$('download-banner-png'),$('download-banner-svg')]) button.disabled = !ready;
   }
   function download(blob, name) { const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000); }
