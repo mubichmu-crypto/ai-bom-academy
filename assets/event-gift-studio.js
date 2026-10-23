@@ -134,7 +134,7 @@ function preview(){const d=makeDocument();$('#preview-paper').innerHTML=d.svg;
  $('#preview-meta').textContent=productName;$('#preview-caption').textContent=productName+' · '+themeMap[state.style].name+' 디자인';
  const dim={certificate:['A4 / 210 × 297mm','여백이 있는 가정·사무실 출력용 축하장'],card:['카드 / 완성 100 × 150mm','PDF·PNG 작업 크기 104×154mm (사방 2mm 도련 포함)'],envelope:['A4 접기도안 / 완성 봉투 170 × 85mm','실선 재단 · 점선 접기 · 6mm 측면 접착날개 (실물 검증 전 시제품)']}[state.product];
  $('#dimensions').innerHTML='<strong>'+dim[0]+'</strong><p>'+dim[1]+'</p>';
- $('#print-guidance').innerHTML=state.product==='envelope'?'<strong>봉투 제작 시 주의</strong><p>일반 A4 용지에 100% 배율로 인쇄하고, 실선을 따라 오린 뒤 접는 선을 따라 접어보세요. 5만 원권 실물을 넣어 여유 공간·접착 면적을 시험해야 합니다. 인쇄업체 봉투 주문용 칼선은 아닙니다.</p>':'<strong>인쇄 품질을 위한 안내</strong><p>PDF 저장 시 배율 100%, 여백 없음, 머리글·바닥글 끄기를 선택하세요. 카드의 실제 완성 크기는 100×150mm이며 작업 파일은 도련 포함 104×154mm입니다. 인쇄업체가 요구하는 규격을 먼저 확인하세요.</p>';
+ $('#print-guidance').innerHTML=state.product==='envelope'?'<strong>실물 인쇄·접기 미검증 · 봉투 제작 안내</strong><p>일반 A4 용지에 100% 배율로 인쇄하고, 실선을 따라 오린 뒤 접는 선을 따라 접어보세요. 5만 원권 실물을 넣어 여유 공간·접착 면적을 시험해야 합니다. 인쇄업체 봉투 주문용 칼선은 아닙니다.</p>':'<strong>실물 인쇄 미검증 · 인쇄 안내</strong><p>PDF 저장 시 배율 100%, 여백 없음, 머리글·바닥글 끄기를 선택하세요. 카드의 실제 완성 크기는 100×150mm이며 작업 파일은 도련 포함 104×154mm입니다. 인쇄업체가 요구하는 규격을 먼저 확인하세요.</p>';
 }
 function setStatus(text){$('#action-status').textContent=text;}
 function chooseStyle(style){state.style=style;document.querySelectorAll('[data-style]').forEach(el=>{let on=el.dataset.style===style;el.classList.toggle('is-selected',on);el.setAttribute('aria-pressed',String(on));});preview();}
