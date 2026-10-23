@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="축하하는 마음을 한 장의 선물로. AI봄에서 축하장과 현금봉투를 무료로 디자인하고 인쇄용 파일을 만드세요.">
+<title>이벤트 선물공방 | AI봄 스튜디오</title>
+<link rel="stylesheet" href="assets/event-gift-studio.css?v=20261023">
+<script src="assets/event-gift-studio.js?v=20261023" defer></script>
+</head>
+<body>
+<a href="#editor" class="skip">편집기로 바로 이동</a>
+<header class="site-header">
+ <a class="brand" href="index.html" aria-label="AI봄 홈페이지"><img src="assets/logo.png" width="96" height="52" style="object-fit:contain" alt="AI봄 스튜디오 홈"></a>
+ <nav aria-label="주 메뉴"><a href="index.html">AI봄 홈</a><a href="#how">제작 안내</a><a href="#print-order">인쇄 주문</a></nav>
+</header>
+<main>
+ <section class="hero" aria-labelledby="main-title">
+  <div class="hero-copy"><div class="eyebrow"><i aria-hidden="true"></i> AI봄 · 무료 디자인 스튜디오 <span class="eyebrow-rule"></span> VOL. 01</div>
+   <h1 id="main-title">축하하는 마음을,<br><em>한 장의 선물로.</em></h1>
+   <p class="hero-lead">받는 분의 이름과 전하고 싶은 말을 적어 보세요.<br>품격 있는 축하장과 현금봉투를 한 세트로 완성할 수 있어요.</p>
+   <div class="hero-actions"><a href="#editor" class="btn btn-dark">지금 직접 만들기 <span aria-hidden="true">↗</span></a><span class="soft-note">로그인 없이 · 무료 디자인 · 직접 파일 저장</span></div>
+  </div>
+  <div class="hero-art" aria-hidden="true"><div class="art-paper back"><div class="art-orbit"></div></div><div class="art-paper front"><span class="art-kicker">A NEW CHAPTER</span><div class="art-emblem">❋</div><strong>새로운 출발을<br>축하합니다</strong><span class="art-sep"></span><small>마음을 담은 축하장</small></div><div class="art-tag">Designed with care</div></div>
+ </section>
+ <section class="studio" id="editor" aria-labelledby="studio-title">
+  <div class="section-heading"><div><div class="section-label">01 / DESIGN STUDIO</div><h2 id="studio-title">축하 선물 만들기</h2><p>먼저 디자인을 고르고, 문구를 바꾼 다음, 인쇄 파일을 저장하세요.</p></div><div class="mini-stamp">FREE<br>DESIGN</div></div>
+  <div class="studio-grid">
+   <aside class="controls" aria-label="선물 디자인 설정">
+    <section class="control-group"><div class="control-header"><span class="step">01</span><h3>마음에 드는 디자인</h3></div>
+     <div class="style-picks" role="group" aria-label="디자인 스타일">
+      <button type="button" class="style-pick is-selected" data-style="classic" aria-pressed="true"><span class="swatch swatch-classic"><i></i></span><strong>기품</strong><small>격식 있는 축하</small></button>
+      <button type="button" class="style-pick" data-style="garden" aria-pressed="false"><span class="swatch swatch-garden"><i></i></span><strong>정원</strong><small>따뜻한 마음</small></button>
+      <button type="button" class="style-pick" data-style="minimal" aria-pressed="false"><span class="swatch swatch-minimal"><i></i></span><strong>여백</strong><small>단정한 인사</small></button>
+     </div>
+    </section>
+    <section class="control-group"><div class="control-header"><span class="step">02</span><h3>축하의 말</h3></div>
+     <label for="occasion">축하 상황</label><select id="occasion"><option value="new">새로운 출발</option><option value="promotion">승진·취업</option><option value="thanks">감사</option><option value="birthday">생일</option><option value="retire">퇴임</option><option value="custom">직접 작성</option></select>
+     <label for="title">축하장 제목</label><input id="title" maxlength="32" value="새로운 출발을 축하합니다">
+     <label for="recipient">받는 분</label><input id="recipient" maxlength="24" value="○○○ 선생님">
+     <label for="message">전하고 싶은 말</label><textarea id="message" maxlength="105" rows="3">새로운 자리에서 펼쳐질 좋은 날들을 진심으로 응원합니다.</textarea>
+     <label for="sender">보내는 분 (선택)</label><input id="sender" maxlength="26" placeholder="이름을 입력하세요" value="">
+     <p class="field-note">공개 예시에는 특정인의 실명을 사용하지 않습니다. 작성한 내용은 서버에 전송되지 않아요.</p>
+    </section>
+    <section class="control-group"><div class="control-header"><span class="step">03</span><h3>만들 인쇄물</h3></div>
+     <div class="product-tabs" role="group" aria-label="인쇄물 선택">
+      <button type="button" class="product-tab is-selected" data-product="certificate" aria-pressed="true">A4 축하장</button>
+      <button type="button" class="product-tab" data-product="card" aria-pressed="false">카드 100×150</button>
+      <button type="button" class="product-tab" data-product="envelope" aria-pressed="false">현금봉투 도안</button>
+     </div>
+     <div class="dimensions" id="dimensions"><strong>A4 / 210 × 297mm</strong><p>여백이 있는 가정·사무실 출력용 축하장</p></div>
+    </section>
+   </aside>
+   <section class="preview-panel" aria-label="실시간 디자인 미리보기">
+    <div class="preview-header"><div><span class="small-label">LIVE PREVIEW</span><h3>완성될 선물을 미리 보세요</h3></div><span class="preview-meta" id="preview-meta">A4 축하장</span></div>
+    <div class="preview-surface"><div class="preview-paper" id="preview-paper" role="img" aria-label="현재 축하장 미리보기"></div></div>
+    <div class="paper-nav"><span id="preview-caption">A4 축하장 · 기품 디자인</span><span>실제 인쇄 시 색상 차이가 있을 수 있습니다.</span></div>
+    <div class="download-area"><div class="download-title"><strong>디자인이 마음에 드시나요?</strong><small>선택한 인쇄물의 파일을 저장할 수 있어요.</small></div>
+     <div class="download-buttons"><button type="button" class="btn btn-dark" id="download-pdf">PDF 인쇄·저장 창 열기 ↗</button><button type="button" class="btn btn-outline" id="download-png">고해상도 PNG 저장 ↓</button></div>
+     <p id="action-status" class="action-status" aria-live="polite">PDF는 브라우저의 인쇄 창에서 ‘PDF로 저장’을 선택하면 됩니다. 휴대폰에서 저장이 지원되지 않으면 PC의 Chrome·Edge에서 저장해 주세요.</p>
+    </div>
+    <div class="print-guidance" id="print-guidance"><strong>실물 인쇄·접기 미검증</strong><p>PDF 저장 시 배율 100%, 여백 없음, 머리글·바닥글 끄기를 선택하세요. 업체마다 요구하는 PDF 규격과 인쇄 수량을 먼저 확인해야 합니다.</p></div>
+   </section>
+  </div>
+ </section>
+ <section class="ribbon-area" id="ribbon"><div class="section-heading"><div><div class="section-label">02 / LITTLE EXTRA</div><h2>화분 리본의 짧은 한마디</h2><p>길게 설명하지 않아도 마음이 전해지는 두 줄을 준비하세요.</p></div></div>
+  <div class="ribbon-grid"><div class="ribbon-controls"><label for="ribbon-theme">리본 문구 고르기</label><select id="ribbon-theme"><option value="start">새로운 출발</option><option value="thanks">감사의 마음</option><option value="congrats">축하합니다</option></select><label for="ribbon-left">첫 번째 리본</label><input id="ribbon-left" maxlength="30" value="새로운 시작을 응원합니다"><label for="ribbon-right">두 번째 리본</label><input id="ribbon-right" maxlength="30" value="마음을 담아 드립니다"><button type="button" class="btn btn-outline" id="copy-ribbon">리본 문구 복사하기</button><p class="field-note">리본 폭·문구 길이는 화분 판매점에서 확인하세요.</p></div>
+   <div class="ribbon-visual"><div class="ribbon-title">FOR A SPECIAL DAY</div><div class="ribbons"><div class="ribbon" id="ribbon-view-left">새로운 시작을 응원합니다</div><div class="ribbon" id="ribbon-view-right">마음을 담아 드립니다</div></div><span>작지만 오래 기억될 한마디</span></div>
+  </div>
+ </section>
+ <p class="field-note">꽃화분도 함께 준비하고 싶다면 <a href="https://naver.me/FZoZix7i" target="_blank" rel="noopener noreferrer">꽃화분 판매 페이지 보기 ↗</a> · 가격·배송비·리본 제공 여부는 판매 페이지에서 확인하세요.</p>
+ <section class="steps-area" id="how"><div class="section-label">03 / FROM SCREEN TO PAPER</div><h2>화면에서 만든 마음을 실제 선물로</h2><div class="steps-grid"><article><b>01</b><h3>디자인 선택</h3><p>기품·정원·여백 중 어울리는 분위기를 고릅니다.</p></article><article><b>02</b><h3>이름과 문구 입력</h3><p>입력하는 즉시 축하장·카드·봉투에 반영됩니다.</p></article><article><b>03</b><h3>파일 저장</h3><p>정확한 크기의 PDF 또는 고해상도 PNG를 저장합니다.</p></article><article><b>04</b><h3>인쇄·선물하기</h3><p>집에서 직접 출력하거나 인쇄업체에 별도로 주문합니다.</p></article></div></section>
+ <section class="print-order" id="print-order"><div class="order-head"><div class="section-label">04 / MAKE IT REAL</div><h2>인쇄는 원하는 곳에서</h2><p>디자인은 AI봄에서 무료. 인쇄·배송은 업체에서 별도 결제하는 방식입니다.</p></div><div class="order-links"><a href="https://nemodi.com/myfile.html" target="_blank" rel="noopener noreferrer"><span><small>EXTERNAL PRINT SHOP</small><strong>네모디</strong><em>내 파일로 인쇄 주문 ↗</em></span></a><a href="https://www.redprinting.co.kr/" target="_blank" rel="noopener noreferrer"><span><small>EXTERNAL PRINT SHOP</small><strong>레드프린팅</strong><em>인쇄 상품·규격 확인 ↗</em></span></a></div>
+ <p class="legal">AI봄은 인쇄업체에 주문을 자동 접수하거나 품질을 보증하지 않습니다. 인쇄업체의 제품별 파일 규격·용지·최소 수량·가격을 직접 확인한 뒤 주문하세요. 특히 <b>현금봉투 도안은 A4 직접 출력·접기 용도</b>이며, 업체의 봉투 칼선으로 검증된 주문 파일이 아닙니다. 화면의 금색은 금박 후가공이 아닌 일반 인쇄 색상입니다.</p>
+
+ </section>
+</main>
+<footer class="footer"><div><b>AI봄 스튜디오</b><p>배움에, 봄이 오다. · 전하고 싶은 마음을 직접 만듭니다.</p></div><a href="index.html">홈페이지로 돌아가기 ↑</a></footer>
+</body></html>
