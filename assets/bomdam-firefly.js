@@ -1,15 +1,18 @@
 /** AI봄 메인: 금빛 날개 봄담이의 반딧불이 비행.
- * 그림 파일은 기존 golden-bird-bomdam-dressed.png를 그대로 사용합니다.
- * 화면 가장자리를 천천히 돌며, 글과 버튼의 클릭을 막지 않습니다.
+ * 날개짓 GIF를 사용하며 멈춤 상태에서는 정지 그림으로 전환합니다.
+ * 화면 가장자리를 천천히 돌며, 봄담이를 누르면 무료 선물방으로 이동합니다.
  */
 (() => {
   'use strict';
   if (document.querySelector('.bomdam-firefly')) return;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const sprite = document.createElement('div');
+  const sprite = document.createElement('a');
   sprite.className = 'bomdam-firefly';
-  sprite.setAttribute('aria-hidden', 'true');
+  sprite.href = 'gift.html';
+  sprite.setAttribute('aria-label', '봄담이와 무료 선물 받기');
+  sprite.title = '나를 누르면 무료 선물방으로 가요';
   sprite.innerHTML = '<span class="firefly-halo"></span><img src="assets/golden-bird-bomdam-dressed.png" alt="" width="1280" height="1280">';
+  const portrait = sprite.querySelector('img');
   const toggle = document.createElement('button');
   toggle.type = 'button';
   toggle.className = 'firefly-toggle';
@@ -55,6 +58,8 @@
     frame = 0;
     previous = null;
     sprite.classList.toggle('is-still', paused || document.hidden);
+    const imagePath = paused || document.hidden ? 'assets/golden-bird-bomdam-dressed.png' : 'assets/bomdam-wing-flight.gif';
+    if (portrait.getAttribute('src') !== imagePath) portrait.setAttribute('src', imagePath);
     toggle.textContent = paused ? '날개 봄담이 재생' : '날개 봄담이 멈춤';
     toggle.setAttribute('aria-pressed', String(paused));
     toggle.setAttribute('aria-label', paused ? '날개 봄담이 움직임 재생하기' : '날개 봄담이 움직임 멈추기');
@@ -64,6 +69,10 @@
     if (!paused && !document.hidden) frame = requestAnimationFrame(draw);
   }
 
+  sprite.addEventListener('pointerenter', () => { cancelAnimationFrame(frame); frame = 0; previous = null; });
+  sprite.addEventListener('pointerleave', sync);
+  sprite.addEventListener('focus', () => { cancelAnimationFrame(frame); frame = 0; previous = null; });
+  sprite.addEventListener('blur', sync);
   toggle.addEventListener('click', () => { paused = !paused; sync(); });
   reduced.addEventListener('change', () => { paused = reduced.matches; sync(); });
   document.addEventListener('visibilitychange', sync);

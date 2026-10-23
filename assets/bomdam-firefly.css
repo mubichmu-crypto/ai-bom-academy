@@ -1,12 +1,15 @@
-/* 반딧불이처럼 은은하게 빛나는 날개 봄담이. 클릭은 아래 콘텐츠로 통과합니다. */
-.bomdam-firefly{position:fixed;left:0;top:0;width:76px;height:76px;z-index:12;pointer-events:none;will-change:transform}
+/* 반딧불이처럼 은은하게 빛나는 날개 봄담이. 누르면 무료 선물방으로 이동합니다. */
+.bomdam-firefly{position:fixed;left:0;top:0;width:76px;height:76px;z-index:12;pointer-events:auto;cursor:pointer;text-decoration:none;will-change:transform}
 .bomdam-firefly img{position:relative;display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 7px #e2c35688);animation:bomdam-flutter 1.8s ease-in-out infinite}
 .firefly-halo{position:absolute;inset:8%;border-radius:50%;background:radial-gradient(circle,#ffedb37a 0,#ffe7a836 42%,transparent 72%);animation:bomdam-glow 3s ease-in-out infinite}
 .firefly-toggle{position:fixed;right:12px;bottom:12px;z-index:13;min-height:36px;padding:7px 11px;border:1px solid #c7ccb5;border-radius:30px;background:#fffdf1ed;color:#54704c;font:12px/1.5 system-ui,-apple-system,"Malgun Gothic",sans-serif;cursor:pointer;box-shadow:0 2px 8px #314b2310}
 .firefly-toggle:focus-visible{outline:3px solid #966c34;outline-offset:3px}
 .firefly-toggle:disabled{cursor:default;color:#74816c}
 .bomdam-firefly.is-still img,.bomdam-firefly.is-still .firefly-halo{animation-play-state:paused}
-@keyframes bomdam-flutter{0%,100%{transform:translateY(0) rotate(var(--flight-tilt,0deg)) scaleX(1)}50%{transform:translateY(-4px) rotate(var(--flight-tilt,0deg)) scaleX(.94)}}
+@keyframes bomdam-flutter{0%,100%{transform:translateY(0) rotate(var(--flight-tilt,0deg))}50%{transform:translateY(-4px) rotate(var(--flight-tilt,0deg))}}
 @keyframes bomdam-glow{0%,100%{opacity:.45;transform:scale(.9)}50%{opacity:.9;transform:scale(1.18)}}
 @media(max-width:620px){.bomdam-firefly{width:48px;height:48px;opacity:.9}.firefly-toggle{right:8px;bottom:8px;font-size:11px;min-height:34px;padding:6px 9px}}
 @media(prefers-reduced-motion:reduce){.bomdam-firefly img,.firefly-halo{animation:none}.bomdam-firefly{will-change:auto}}
+
+.bomdam-firefly:focus-visible{outline:3px solid #966c34;outline-offset:4px;border-radius:50%}
+.bomdam-firefly::after{content:"무료 선물";position:absolute;left:50%;top:100%;transform:translateX(-50%);white-space:nowrap;background:#fffbea;color:#49603c;border:1px solid #d7d9b6;border-radius:12px;padding:2px 7px;font:11px/1.5 system-ui,sans-serif;box-shadow:0 2px 6px #294a3918}
