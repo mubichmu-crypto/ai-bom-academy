@@ -13,6 +13,38 @@
   sprite.title = '나를 누르면 무료 선물방으로 가요';
   sprite.innerHTML = '<span class="firefly-halo"></span><img src="assets/golden-bird-bomdam-dressed.png" alt="" width="1280" height="1280">';
   const portrait = sprite.querySelector('img');
+  // GIF를 그대로 그리되 작은 화면에서도 보이도록 날개 끝만 추가 변형합니다.
+  const wings = document.createElement('canvas');
+  wings.width = wings.height = 500;
+  wings.setAttribute('aria-hidden', 'true');
+  sprite.append(wings);
+  const paint = wings.getContext('2d');
+  let wingTime = 0;
+  const smooth = value => { const t = Math.max(0, Math.min(1, value)); return t * t * (3 - 2 * t); };
+  function paintWings(time) {
+    if (!portrait.complete || !portrait.naturalWidth) return;
+    if (time - wingTime < 32) return;
+    wingTime = time;
+    paint.clearRect(0, 0, 500, 500);
+    const wave = Math.sin(time / 150);
+    const sw = portrait.naturalWidth / 500, sh = portrait.naturalHeight / 500;
+    for (let x = 0; x < 500; x += 10) {
+      const left = smooth((155 - x) / 110);
+      const right = smooth((x - 355) / 110);
+      if (!left && !right) { paint.drawImage(portrait, x*sw, 0, 10*sw, 500*sh, x, 0, 10, 500); continue; }
+      for (let y = 0; y < 500; y += 10) {
+        const weight = left * smooth((y-125)/50) * smooth((390-y)/65)
+          + right * smooth((y-235)/45) * smooth((435-y)/55);
+        const offset = 35 * wave * weight;
+        const yn = y + 10;
+        const nextWeight = left * smooth((yn-125)/50) * smooth((390-yn)/65)
+          + right * smooth((yn-235)/45) * smooth((435-yn)/55);
+        const nextOffset = 35 * wave * nextWeight;
+        paint.drawImage(portrait, x*sw, y*sh, 10*sw, 10*sh, x, y+offset, 10, Math.max(1,10+nextOffset-offset)+.6);
+      }
+    }
+    sprite.classList.add('wings-ready');
+  }
   const toggle = document.createElement('button');
   toggle.type = 'button';
   toggle.className = 'firefly-toggle';
@@ -50,6 +82,7 @@
     if (previous !== null) elapsed += Math.min(time - previous, 80);
     previous = time;
     place();
+    paintWings(time);
     frame = requestAnimationFrame(draw);
   }
 
@@ -58,6 +91,7 @@
     frame = 0;
     previous = null;
     sprite.classList.toggle('is-still', paused || document.hidden);
+    if (paused || document.hidden) sprite.classList.remove('wings-ready');
     const imagePath = paused || document.hidden ? 'assets/golden-bird-bomdam-dressed.png' : 'assets/bomdam-wing-flight.gif';
     if (portrait.getAttribute('src') !== imagePath) portrait.setAttribute('src', imagePath);
     toggle.textContent = paused ? '날개 봄담이 재생' : '날개 봄담이 멈춤';
@@ -85,3 +119,4 @@
   window.addEventListener('pageshow', sync);
   sync();
 })();
+
