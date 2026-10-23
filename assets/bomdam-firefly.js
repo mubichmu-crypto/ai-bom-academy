@@ -1,4 +1,4 @@
-/** AI봄 메인: 금빛 날개 봄담이의 반딧불이 비행.
+/** AI봄 메인: 금빛 반디봄담이의 반딧불이 비행.
  * 날개짓 GIF를 사용하며 멈춤 상태에서는 정지 그림으로 전환합니다.
  * 화면 가장자리를 천천히 돌며, 봄담이를 누르면 무료 선물방으로 이동합니다.
  */
@@ -9,7 +9,7 @@
   const sprite = document.createElement('a');
   sprite.className = 'bomdam-firefly';
   sprite.href = 'gift.html';
-  sprite.setAttribute('aria-label', '봄담이와 무료 선물 받기');
+  sprite.setAttribute('aria-label', '반디봄담이와 무료 선물 받기');
   sprite.title = '나를 누르면 무료 선물방으로 가요';
   sprite.innerHTML = '<span class="firefly-halo"></span><img src="assets/golden-bird-bomdam-dressed.png" alt="" width="1280" height="1280">';
   const portrait = sprite.querySelector('img');
@@ -48,7 +48,7 @@
   const toggle = document.createElement('button');
   toggle.type = 'button';
   toggle.className = 'firefly-toggle';
-  toggle.setAttribute('aria-label', '날개 봄담이 움직임 멈추기');
+  toggle.setAttribute('aria-label', '반디봄담이 움직임 멈추기');
   document.body.append(sprite, toggle);
 
   let paused = reduced.matches;
@@ -94,11 +94,11 @@
     if (paused || document.hidden) sprite.classList.remove('wings-ready');
     const imagePath = paused || document.hidden ? 'assets/golden-bird-bomdam-dressed.png' : 'assets/bomdam-wing-flight.gif';
     if (portrait.getAttribute('src') !== imagePath) portrait.setAttribute('src', imagePath);
-    toggle.textContent = paused ? '날개 봄담이 재생' : '날개 봄담이 멈춤';
+    toggle.textContent = paused ? '반디봄담이 재생' : '반디봄담이 멈춤';
     toggle.setAttribute('aria-pressed', String(paused));
-    toggle.setAttribute('aria-label', paused ? '날개 봄담이 움직임 재생하기' : '날개 봄담이 움직임 멈추기');
+    toggle.setAttribute('aria-label', paused ? '반디봄담이 움직임 재생하기' : '반디봄담이 움직임 멈추기');
     toggle.disabled = reduced.matches;
-    if (reduced.matches) toggle.textContent = '봄담이 · 움직임 줄임';
+    if (reduced.matches) toggle.textContent = '반디봄담이 · 움직임 줄임';
     place();
     if (!paused && !document.hidden) frame = requestAnimationFrame(draw);
   }
