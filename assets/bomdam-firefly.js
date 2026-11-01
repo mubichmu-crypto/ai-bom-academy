@@ -1,17 +1,9 @@
-/** AI봄 메인: 금빛 반디봄담이의 반딧불이 비행.
- * 날개짓 GIF를 사용하며 멈춤 상태에서는 정지 그림으로 전환합니다.
- * 화면 가장자리를 천천히 돌며, 봄담이를 누르면 무료 선물방으로 이동합니다.
- */
-(() => {
-  'use strict';
-  if (document.querySelector('.bomdam-firefly')) return;
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const sprite = document.createElement('a');
-  sprite.className = 'bomdam-firefly';
-  sprite.href = 'gift.html';
-  sprite.setAttribute('aria-label', '반디봄담이와 무료 선물 받기');
-  sprite.title = '나를 누르면 무료 선물방으로 가요';
-  sprite.innerHTML = '<span class="firefly-halo"></span><img src="assets/golden-bird-bomdam-dressed.png" alt="" width="1280" height="1280">';
+/** Bomdami stays still by default. Click opens choices, never direct navigation. */
+(()=>{'use strict';if(document.querySelector('.bomdam-firefly'))return;
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+const read=k=>{try{return localStorage.getItem(k);}catch{return null;}};
+const remember=(k,v)=>{try{localStorage.setItem(k,v);}catch{}};
+const sprite=document.createElement('button');sprite.type='button';sprite.className='bomdam-firefly';sprite.setAttribute('aria-label','봄담이 메뉴 열기');sprite.setAttribute('aria-controls','firefly-menu');sprite.setAttribute('aria-expanded','false');sprite.title='멈추기·숨기기·무료 선물을 선택하세요';sprite.innerHTML='<span class="firefly-halo"></span><img src="assets/golden-bird-bomdam-dressed.png" alt="" width="1280" height="1280">';
   const portrait = sprite.querySelector('img');
   // GIF를 그대로 그리되 작은 화면에서도 보이도록 날개 끝만 추가 변형합니다.
   const wings = document.createElement('canvas');
@@ -45,19 +37,12 @@
     }
     sprite.classList.add('wings-ready');
   }
-  const toggle = document.createElement('button');
-  toggle.type = 'button';
-  toggle.className = 'firefly-toggle';
-  toggle.setAttribute('aria-label', '반디봄담이 움직임 멈추기');
-  document.body.append(sprite, toggle);
 
-  let paused = reduced.matches;
-  let frame = 0;
-  let elapsed = 0;
-  let previous = null;
-  let width = window.innerWidth;
-  let height = window.innerHeight;
-
+const toggle=document.createElement('button');toggle.type='button';toggle.className='firefly-toggle';toggle.setAttribute('aria-controls','firefly-menu');
+const menu=document.createElement('section');menu.id='firefly-menu';menu.className='firefly-menu';menu.hidden=true;menu.setAttribute('aria-label','봄담이 선택 메뉴');menu.innerHTML='<div class="firefly-menu-head"><strong>봄담이와 무엇을 할까요?</strong><button type="button" data-close aria-label="봄담이 메뉴 닫기">×</button></div><p>원하는 것을 골라 주세요. 닫으면 이 페이지에 그대로 있어요.</p><button type="button" data-motion></button><button type="button" data-hide>봄담이 숨기기</button><a href="gift.html">무료 선물 6종 보기 ↗</a><button type="button" data-stay>아무것도 안 하고 닫기</button>';
+document.body.append(sprite,toggle,menu);
+let hidden=read('aibom.firefly.hidden')==='yes',paused=reduced.matches||read('aibom.firefly.motion')!=='running';
+let frame=0,elapsed=0,previous=null,width=innerWidth,height=innerHeight;
   function place() {
     const small = width <= 620;
     const size = small ? 48 : 76;
@@ -78,7 +63,7 @@
 
   function draw(time) {
     frame = 0;
-    if (paused || document.hidden) { previous = null; return; }
+    if (paused || hidden || !menu.hidden || document.hidden) { previous = null; return; }
     if (previous !== null) elapsed += Math.min(time - previous, 80);
     previous = time;
     place();
@@ -86,37 +71,15 @@
     frame = requestAnimationFrame(draw);
   }
 
-  function sync() {
-    cancelAnimationFrame(frame);
-    frame = 0;
-    previous = null;
-    sprite.classList.toggle('is-still', paused || document.hidden);
-    if (paused || document.hidden) sprite.classList.remove('wings-ready');
-    const imagePath = paused || document.hidden ? 'assets/golden-bird-bomdam-dressed.png' : 'assets/bomdam-wing-flight.gif';
-    if (portrait.getAttribute('src') !== imagePath) portrait.setAttribute('src', imagePath);
-    toggle.textContent = paused ? '반디봄담이 재생' : '반디봄담이 멈춤';
-    toggle.setAttribute('aria-pressed', String(paused));
-    toggle.setAttribute('aria-label', paused ? '반디봄담이 움직임 재생하기' : '반디봄담이 움직임 멈추기');
-    toggle.disabled = reduced.matches;
-    if (reduced.matches) toggle.textContent = '반디봄담이 · 움직임 줄임';
-    place();
-    if (!paused && !document.hidden) frame = requestAnimationFrame(draw);
-  }
 
-  sprite.addEventListener('pointerenter', () => { cancelAnimationFrame(frame); frame = 0; previous = null; });
-  sprite.addEventListener('pointerleave', sync);
-  sprite.addEventListener('focus', () => { cancelAnimationFrame(frame); frame = 0; previous = null; });
-  sprite.addEventListener('blur', sync);
-  toggle.addEventListener('click', () => { paused = !paused; sync(); });
-  reduced.addEventListener('change', () => { paused = reduced.matches; sync(); });
-  document.addEventListener('visibilitychange', sync);
-  window.addEventListener('resize', () => {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    place();
-  });
-  window.addEventListener('pagehide', () => cancelAnimationFrame(frame));
-  window.addEventListener('pageshow', sync);
-  sync();
-})();
-
+function sync(){cancelAnimationFrame(frame);frame=0;previous=null;const resting=paused||hidden||!menu.hidden||document.hidden;sprite.hidden=hidden;sprite.classList.toggle('is-still',resting);if(resting)sprite.classList.remove('wings-ready');const src=resting?'assets/golden-bird-bomdam-dressed.png':'assets/bomdam-wing-flight.gif';if(portrait.getAttribute('src')!==src)portrait.src=src;toggle.textContent=hidden?'봄담이 보이기':'봄담이 설정';toggle.setAttribute('aria-label',hidden?'숨긴 봄담이 다시 보이기':'봄담이 선택 메뉴 열기');const motion=menu.querySelector('[data-motion]');motion.textContent=paused?'다시 움직이기':'움직임 멈추기';motion.disabled=reduced.matches;if(reduced.matches)motion.textContent='움직임 줄이기 설정 적용 중';place();if(!resting)frame=requestAnimationFrame(draw);}
+function closeMenu(){menu.hidden=true;toggle.setAttribute('aria-expanded','false');sprite.setAttribute('aria-expanded','false');sync();}
+function openMenu(){paused=true;remember('aibom.firefly.motion','paused');menu.hidden=false;toggle.setAttribute('aria-expanded','true');sprite.setAttribute('aria-expanded','true');sync();menu.querySelector('[data-close]').focus({preventScroll:true});}
+sprite.onclick=openMenu;toggle.onclick=()=>{if(hidden){hidden=false;remember('aibom.firefly.hidden','no');openMenu();}else if(menu.hidden)openMenu();else closeMenu();};
+menu.querySelector('[data-motion]').onclick=()=>{paused=!paused;remember('aibom.firefly.motion',paused?'paused':'running');closeMenu();toggle.focus({preventScroll:true});};
+menu.querySelector('[data-hide]').onclick=()=>{hidden=true;remember('aibom.firefly.hidden','yes');closeMenu();toggle.focus({preventScroll:true});};
+for(const b of menu.querySelectorAll('[data-close],[data-stay]'))b.onclick=()=>{closeMenu();toggle.focus({preventScroll:true});};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){closeMenu();toggle.focus({preventScroll:true});}});
+document.addEventListener('pointerdown',e=>{if(!menu.hidden&&!menu.contains(e.target)&&!sprite.contains(e.target)&&!toggle.contains(e.target))closeMenu();});
+sprite.addEventListener('pointerenter',()=>{cancelAnimationFrame(frame);frame=0;previous=null;});sprite.addEventListener('pointerleave',sync);sprite.addEventListener('focus',()=>{cancelAnimationFrame(frame);frame=0;previous=null;});sprite.addEventListener('blur',sync);
+reduced.addEventListener('change',()=>{if(reduced.matches)paused=true;sync();});document.addEventListener('visibilitychange',sync);window.addEventListener('resize',()=>{width=innerWidth;height=innerHeight;place();});window.addEventListener('pagehide',()=>cancelAnimationFrame(frame));window.addEventListener('pageshow',sync);sync();})();

@@ -17,3 +17,10 @@
 .bomdam-firefly canvas{position:absolute;inset:0;width:100%;height:100%;display:none;filter:drop-shadow(0 0 7px #e2c35688)}
 .bomdam-firefly.wings-ready canvas{display:block}
 .bomdam-firefly.wings-ready img{visibility:hidden}
+
+/* A click opens choices rather than navigating. */
+button.bomdam-firefly{padding:0;border:0;background:transparent;min-height:0;border-radius:50%;line-height:1}.bomdam-firefly::after{content:'눌러서 선택'}
+.firefly-menu[hidden],.bomdam-firefly[hidden]{display:none!important}
+.firefly-menu{position:fixed;right:14px;bottom:64px;z-index:30;width:270px;max-width:calc(100vw - 28px);padding:17px;border:1px solid #cbd5bf;border-radius:16px;background:#fffdf6;box-shadow:0 12px 40px #233b3026;color:#304934;font:13px/1.7 system-ui,-apple-system,'Malgun Gothic',sans-serif}
+.firefly-menu-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.firefly-menu-head strong{font-size:14px}.firefly-menu-head button{width:36px;min-height:36px;padding:0;border:0;background:transparent;color:inherit;font-size:23px;cursor:pointer}.firefly-menu>p{font-size:11px;color:#6b7865;line-height:1.7;margin:8px 0 13px}
+.firefly-menu>button,.firefly-menu>a{display:block;width:100%;box-sizing:border-box;min-height:44px;margin-top:7px;padding:10px 12px;border:1px solid #d8dfcc;border-radius:9px;background:#f3f6ec;color:#304934;font:inherit;text-align:left;text-decoration:none;cursor:pointer}.firefly-menu>a{background:#31533d;color:white;border-color:#31533d}.firefly-menu>[data-stay]{background:transparent;border-color:transparent;color:#6b7865;font-size:12px;text-align:center}.firefly-menu button:focus-visible,.firefly-menu a:focus-visible{outline:3px solid #a5874d;outline-offset:2px}.firefly-menu button:disabled{cursor:default;opacity:.6}
