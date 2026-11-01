@@ -1,6 +1,6 @@
 import {safeLink,safeImage,publicItems} from './cms-domain.js';
 export function renderContent(root,siteId,settings={},rows=[]){
- const map=siteId==='aibom'?{title:'.intro h1',subtitle:'.intro .home-promise',cta:'header .contact'}:{title:'[data-cms-title]',subtitle:'[data-cms-subtitle]',cta:'[data-cms-cta]'};
+ const map=siteId==='aibom'?{title:'[data-cms-title], .intro h1',subtitle:'[data-cms-subtitle], .intro .home-promise',cta:'[data-cms-cta], header .contact'}:{title:'[data-cms-title]',subtitle:'[data-cms-subtitle]',cta:'[data-cms-cta]'};
  const sameText=(a,b)=>String(a).replace(/\s+/g,' ').trim()===String(b).replace(/\s+/g,' ').trim();
  for(const key of ['title','subtitle']){const element=root.querySelector(map[key]);if(element&&settings[key]&&!sameText(element.textContent,settings[key]))element.textContent=settings[key];}
  const cta=root.querySelector(map.cta),ctaHref=safeLink(settings.ctaHref);
